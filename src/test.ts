@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 interface User {
   name: string;
   age: number;
@@ -19,3 +21,24 @@ class SomeClass {
 const some = new SomeClass();
 const a = some.test({ name: 'lwj', age: 18 });
 const b = some.test(1, 'true');
+
+function Inject(target: any, key: string) {
+  target[key] = new (Reflect.getMetadata('design:type', target, key))();
+}
+
+class A {
+  sayHello() {
+    console.log('hello');
+  }
+}
+
+class B {
+  @Inject // !编译后等同于执行了@Reflect.metadata( "design: type",A)
+  a!: A;
+
+  say() {
+    this.a.sayHello();
+  }
+}
+
+new B().say();

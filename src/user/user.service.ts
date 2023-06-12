@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UserService {
+  private readonly users = [];
+
   getUser(): any {
     return {
       code: 200,
@@ -12,6 +14,7 @@ export class UserService {
   }
 
   addUser(): any {
+    this.users.push({ name: 'lwj', age: 20 });
     return {
       code: 200,
       data: {},
