@@ -1,10 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
-const env = 'development';
-const rootPath = path.resolve(process.cwd(), `.env.${env}`); // D:\web\nestjs-demo\.env.development
+const rootPath = path.resolve(process.cwd(), `.env.${process.env.NODE_ENV}`); // D:\web\nestjs-demo\.env.development
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config({ path: rootPath });
-console.log(process.env);
+console.log(process.env.ENV);
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('config');
