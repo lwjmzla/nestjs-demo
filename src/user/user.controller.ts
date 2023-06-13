@@ -14,6 +14,8 @@ export class UserController {
     console.log('user');
     console.log(this.configService.get(ConfigEnum.DB)); // !获取环境变量.env的值，nestjs使用dotenv
     console.log(this.configService.get(ConfigEnum.DB_HOST));
+    console.log(this.configService.get(ConfigEnum.DB_URL));
+    console.log(this.configService.get('db1'));
     return this.appService.getUser();
   }
 

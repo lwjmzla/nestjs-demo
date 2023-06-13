@@ -1,0 +1,6 @@
+
+db1:
+  mysql1:
+    name: mysql1-prod
+  mysql2:
+    name: mysql2-prod

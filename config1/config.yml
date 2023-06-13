@@ -1,0 +1,10 @@
+
+db1:
+  mysql1:
+    host: 127.0.0.1
+    name: mysql1
+    port: 3001
+  mysql2:
+    host: 127.0.0.1
+    name: mysql2
+    port: 3002
