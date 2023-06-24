@@ -42,3 +42,29 @@ class B {
 }
 
 new B().say();
+
+
+function groupBy(arr, id) {
+  const map = new Map();
+  for (const item of arr) {
+    const key = item[id];
+    if (!map.has(key)) {
+      map.set(key, []);
+    }
+    map.get(key).push(item);
+  }
+  return Array.from(map.values());
+}
+
+const arr = [ { id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }, { id: 1, name: 'Charlie' }, { id: 3, name: 'David' }, { id: 2, name: 'Eve' }, ]; 
+const result = groupBy(arr, 'id'); 
+console.log(result); // [ // [{ id: 1, name: 'Alice' }, { id: 1, name: 'Charlie' }], // [{ id: 2, name: 'Bob' }, { id: 2, name: 'Eve' }], // [{ id: 3, name: 'David' }] // ]
+
+const obj = arr.reduce((res, item) => {
+  res[item.id] ? res[item.id].push(item) : res[item.id] = [item]
+  return res
+}, {})
+console.log(obj)
+
+const arr1 = Object.values(obj)
+console.log(arr1)
