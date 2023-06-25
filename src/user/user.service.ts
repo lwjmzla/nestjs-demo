@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common';
 export class UserService {
   private readonly users = [];
 
-  getUser(): any {
+  getUser(obj): any {
     return {
       code: 200,
-      data: 'lwj122',
+      data: obj,
       success: true,
       msg: '请求成功',
     };

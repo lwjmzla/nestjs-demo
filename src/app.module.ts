@@ -9,7 +9,7 @@ import * as dotenv from 'dotenv';
 const envFilePath = `.env.${process.env.NODE_ENV||'development'}`
 console.log(envFilePath)
 
-//import LoadConfigFn from './config'
+//import LoadConfigFn from './config' // !yml 配置文件方式
 
 @Module({
   imports: [

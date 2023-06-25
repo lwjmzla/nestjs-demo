@@ -16,7 +16,13 @@ export class UserController {
     console.log(this.configService.get(ConfigEnum.DB_HOST));
     console.log(this.configService.get(ConfigEnum.DB_URL));
     console.log(this.configService.get('db1'));
-    return this.appService.getUser();
+    const obj = {
+      DB: this.configService.get(ConfigEnum.DB),
+      DB_HOST: this.configService.get(ConfigEnum.DB_HOST),
+      DB_URL: this.configService.get(ConfigEnum.DB_URL),
+      db1: this.configService.get('db1') || '',
+    }
+    return this.appService.getUser(obj);
   }
 
   @Post('add')
