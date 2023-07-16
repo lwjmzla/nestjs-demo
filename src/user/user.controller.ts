@@ -4,10 +4,13 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
 @Controller('user')
 export class UserController {
+  //private readonly userService: UserService;
   constructor(
-    private readonly appService: UserService,
+    private readonly userService: UserService, // !相当于上面和下面注释的两行，private readonly userService: UserService;   this.userService = new UserService()
     private configService: ConfigService,
-  ) {}
+  ) {
+    //this.userService = new UserService()
+  }
 
   @Get()
   getHello(): any {
@@ -22,12 +25,12 @@ export class UserController {
       DB_URL: this.configService.get(ConfigEnum.DB_URL),
       db1: this.configService.get('db1') || '',
     }
-    return this.appService.getUser(obj);
+    return this.userService.getUser(obj);
   }
 
   @Post('add')
   addHello(): any {
     console.log(111);
-    return this.appService.addUser();
+    return this.userService.addUser();
   }
 }
