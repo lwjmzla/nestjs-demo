@@ -1,18 +1,24 @@
-import { Controller, Get, Post,Req,Request,Query,HttpCode,Header,Redirect ,Bind,Param,Body} from '@nestjs/common';
+import { Controller, Get, Post,Req,Request,Inject,Query,HttpCode,Header,Redirect ,Bind,Param,Body} from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
 
-interface CreateUserDto{
+interface UserDto{
   name: string;
   age: number;
+  skill: string;
+  id: string;
+  entryTime: string;
 }
 
 @Controller('user')
 export class UserController {
   //private readonly userService: UserService;
   constructor(
-    private readonly userService: UserService, // !相当于上面和下面注释的两行，private readonly userService: UserService;   this.userService = new UserService()
+    //readonly userService: UserService, // !相当于上面和下面注释的两行，private readonly userService: UserService;   this.userService = new UserService()
+    @Inject('user') readonly userService: UserService,
+    @Inject('userArr') readonly userArr: string[],
+    @Inject('factory') readonly myFactory: string,
     private configService: ConfigService,
   ) {
     //this.userService = new UserService()
@@ -35,9 +41,9 @@ export class UserController {
   }
 
   @Get('test')
-  getHelloReq(@Query() request): string {
+  getHelloReq(@Query() request): any {
     console.log(request)
-    return 'asdsadasd';
+    return this.userArr.join(',') + this.myFactory;
   }
   // @Get('*')
   // getHelloReq1(): string {
@@ -98,8 +104,26 @@ export class UserController {
   }
 
   @Post('add')
-  addHello(@Body() createUserDto: CreateUserDto): any {
-    console.log(111,createUserDto.name,createUserDto.age);
-    return this.appService.addUser();
+  addUser(@Body() userDto: UserDto): any {
+    console.log(userDto);
+    return this.userService.addUser();
+  }
+
+  @Post('delete')
+  delUser(@Body() params: {id: string}): any {
+    console.log(params);
+    return this.userService.delUser(params.id);
+  }
+
+  @Post('update')
+  updateUser(@Body() params: {id: string}): any {
+    console.log(params);
+    return this.userService.updateUser(params.id);
+  }
+
+  @Post('queryPage')
+  getUsers(@Body() params: UserDto): any {
+    console.log(params);
+    return this.userService.getUsers(params);
   }
 }
