@@ -10,10 +10,13 @@ interface CreateUserDto{
 
 @Controller('user')
 export class UserController {
+  //private readonly userService: UserService;
   constructor(
-    private readonly appService: UserService,
+    private readonly userService: UserService, // !相当于上面和下面注释的两行，private readonly userService: UserService;   this.userService = new UserService()
     private configService: ConfigService,
-  ) {}
+  ) {
+    //this.userService = new UserService()
+  }
 
   @Get()
   getHello(): any {
@@ -28,7 +31,7 @@ export class UserController {
       DB_URL: this.configService.get(ConfigEnum.DB_URL),
       db1: this.configService.get('db1') || '',
     }
-    return this.appService.getUser(obj);
+    return this.userService.getUser(obj);
   }
 
   @Get('test')
@@ -54,7 +57,7 @@ export class UserController {
 
   @Get('redirect')
   @Redirect('https://www.baidu.com', 301)
-  // 任意方法名 
+  // 任意方法名
   redirect(){}
 
   /*
