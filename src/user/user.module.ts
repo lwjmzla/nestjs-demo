@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import {TypeOrmModule} from '@nestjs/typeorm'
@@ -32,6 +32,8 @@ import {CounterMiddleware} from '../counter/counter.middleware'
 // !局部中间件
 export class UserModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CounterMiddleware).forRoutes('user')
+    //consumer.apply(CounterMiddleware).forRoutes('user') // !针对user路由启用
+    consumer.apply(CounterMiddleware).forRoutes({path: 'user*', method: RequestMethod.GET})
+    //consumer.apply(CounterMiddleware).forRoutes(UserController) // !多个controller  forRoutes(UserController,xxxx)
   }
 }

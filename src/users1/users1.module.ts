@@ -1,0 +1,15 @@
+import { NestModule, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { Users1Service } from './users1.service';
+import { Users1Controller } from './users1.controller';
+import { CounterMiddleware } from '../counter/counter.middleware'
+
+@Module({
+  controllers: [Users1Controller],
+  providers: [Users1Service]
+})
+export class Users1Module implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CounterMiddleware).forRoutes({ path: 'users1', method: RequestMethod.GET });
+  }
+}
+

@@ -27,10 +27,10 @@ export class UserController {
   @Get()
   getHello(): any {
     console.log('user');
-    console.log(this.configService.get(ConfigEnum.DB)); // !获取环境变量.env的值，nestjs使用dotenv
-    console.log(this.configService.get(ConfigEnum.DB_HOST));
-    console.log(this.configService.get(ConfigEnum.DB_URL));
-    console.log(this.configService.get('db1'));
+    // console.log(this.configService.get(ConfigEnum.DB)); // !获取环境变量.env的值，nestjs使用dotenv
+    // console.log(this.configService.get(ConfigEnum.DB_HOST));
+    // console.log(this.configService.get(ConfigEnum.DB_URL));
+    // console.log(this.configService.get('db1'));
     const obj = {
       DB: this.configService.get(ConfigEnum.DB),
       DB_HOST: this.configService.get(ConfigEnum.DB_HOST),

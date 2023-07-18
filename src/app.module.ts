@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
+import { Users1Module } from './users1/users1.module'
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BoyModule } from './boy/boy.module';
 import * as dotenv from 'dotenv';
 //import * as path from 'path'; // !es6方式引入path
 //const envFilePath = path.join(__dirname, `../.env.${process.env.NODE_ENV||'development'}`) // !或者直接传文件名，.env.development
@@ -33,6 +35,8 @@ console.log(envFilePath)
       autoLoadEntities:true,  // 自动加载实体配置，forFeature()注册的每个实体都自己动加载
     }),
     UserModule,
+    Users1Module,
+    BoyModule
   ], // !nest g module user 自动创建并引入了
   controllers: [AppController],
   providers: [AppService],
