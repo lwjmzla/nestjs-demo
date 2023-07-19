@@ -22,7 +22,8 @@
     "my-test:dev": "cross-env NODE_ENV=development node test-env.js",
     "my-test:uat": "cross-env NODE_ENV=uat node test-env.js",
     "my-test:prod": "cross-env NODE_ENV=production node test-env.js",
-    "pm2-dev": "cross-env NODE_ENV=production pm2 start bin/pm2-dev.config.js"
+    "pm2-dev": "cross-env NODE_ENV=development pm2 start bin/pm2-dev.config.js",
+    "pm2-prod": "cross-env NODE_ENV=production pm2 start bin/pm2-dev.config.js"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",

@@ -5,6 +5,7 @@ import {TypeOrmModule} from '@nestjs/typeorm'
 //import { ConfigModule } from '@nestjs/config';
 import {User} from './entities/user.entity'
 import {CounterMiddleware} from '../counter/counter.middleware'
+import {BoyService} from '../boy/boy.service';
 
 @Module({
   //imports: [ConfigModule.forRoot()], // !这种方式，要求每个使用到的module都要引入，麻烦，所以采用全局的
@@ -12,6 +13,7 @@ import {CounterMiddleware} from '../counter/counter.middleware'
   controllers: [UserController],
   //providers: [UserService], // !把UserService里的功能注入到UserController
   providers: [
+    BoyService,
     {
       provide: 'user',
       useClass: UserService
@@ -33,7 +35,7 @@ import {CounterMiddleware} from '../counter/counter.middleware'
 export class UserModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {
     //consumer.apply(CounterMiddleware).forRoutes('user') // !针对user路由启用
-    consumer.apply(CounterMiddleware).forRoutes({path: 'user*', method: RequestMethod.GET})
+    consumer.apply(CounterMiddleware).forRoutes({path: 'user*', method: RequestMethod.GET}) // !还可以排除路由，exclude({ path: 'cats', method: RequestMethod.GET },...)
     //consumer.apply(CounterMiddleware).forRoutes(UserController) // !多个controller  forRoutes(UserController,xxxx)
   }
 }

@@ -1,19 +1,12 @@
 version: '3'
 services:
-  nest: # 服务名称（自定义）之nodejs服务
-    build: 
-      context: . # 当前目录
-      dockerfile: Dockerfile # 基于 Dockerfile 构建
-    image: image-demo # 依赖于当前Dockerfile 创建出来的镜像
-    container_name: nest # 容器名称
-    ports:
-      - 8081:3000 # 宿主机通过 8081 访问，即端口的映射
-  editor-redis: # 服务名称（自定义）之redis服务
-    image: redis # 引用官方提供的redis镜像
-    container_name: editor-redis # 容器名称
-    ports:
-    # 宿主机(本机)，可以用127.0.0.1:6378连接容器中的redis数据库，使用redis-cli -h 127.0.0.1 -p 6378
-    # 但是，其他 docker 容器不能，因为此时127.0.0.1是容器本身，而不是宿主机
-      - 6378:6379
-    environment: # 环境变量
-      - TZ=Asia/Shanghai # 通过设置环境变量方式设置时区
+    nestjs-demo: # service name
+        volumes: # 相当于docker run -p 82:80 -d -v xxxx:xxxx
+            - '.docker-volumes/pm2/logs:/app/logs' # pm2日志同步，这个地方要注意，要放在第一个属性这，否则centos上无效，但本地有效，好奇怪。
+        build:
+            context: . # 当前目录
+            dockerfile: Dockerfile # 基于 Dockerfile 构建
+        image: nestjs-demo # 依赖于当前 Dockerfile 创建出来的镜像
+        container_name: nestjs-demo
+        ports:
+            - 82:3000 # 宿主机通过 81 访问

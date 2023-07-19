@@ -11,8 +11,29 @@ import * as dotenv from 'dotenv';
 //const envFilePath = path.join(__dirname, `../.env.${process.env.NODE_ENV||'development'}`) // !或者直接传文件名，.env.development
 const envFilePath = `.env.${process.env.NODE_ENV||'development'}`
 console.log(envFilePath)
+import {Users1Service} from './users1/users1.service'
 
 //import LoadConfigFn from './config' // !yml 配置文件方式
+
+const mysqlConf = {
+  type:'mysql',           // 数据库类型
+  host:'119.29.170.43',       // 数据库的连接地址host
+  port:3305,              // 数据库的端口 3306
+  username:'root',        // 连接账号
+  password:'123',     // 连接密码
+  database:'nestjs_demo',     // 连接的表名 // !应该是库名
+  retryDelay:500,         // 重试连接数据库间隔
+  retryAttempts:10,       // 允许重连次数
+  synchronize:true,       // 是否将实体同步到数据库
+  autoLoadEntities:true,  // 自动加载实体配置，forFeature()注册的每个实体都自己动加载
+  //"charset": "utf8mb4"
+}
+
+// if (process.env.NODE_ENV === 'production') {
+//   mysqlConf.host = 'editor-mysql'
+//   mysqlConf.port = 3305
+//   mysqlConf.password = '123'
+// }
 
 @Module({
   imports: [
@@ -22,23 +43,12 @@ console.log(envFilePath)
       envFilePath, // ! 对应的dev或者prod环境变量
       //load: [LoadConfigFn]
     }),
-    TypeOrmModule.forRoot({
-      type:'mysql',           // 数据库类型
-      host:'localhost',       // 数据库的连接地址host
-      port:3306,              // 数据库的端口 3306
-      username:'root',        // 连接账号
-      password:'root123',     // 连接密码
-      database:'test_db1',     // 连接的表名 // !应该是库名
-      retryDelay:500,         // 重试连接数据库间隔
-      retryAttempts:10,       // 允许重连次数
-      synchronize:true,       // 是否将实体同步到数据库
-      autoLoadEntities:true,  // 自动加载实体配置，forFeature()注册的每个实体都自己动加载
-    }),
+    TypeOrmModule.forRoot({...mysqlConf,type: 'mysql'}),
     UserModule,
     Users1Module,
     BoyModule
   ], // !nest g module user 自动创建并引入了
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,Users1Service],
 })
 export class AppModule {}

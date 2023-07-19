@@ -2,6 +2,8 @@ import { Controller, Get, Post,Req,Request,Inject,Query,HttpCode,Header,Redirect
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
+import {BoyService} from './../boy/boy.service';
+import {Users1Service} from '../users1/users1.service'
 
 interface UserDto{
   name: string;
@@ -20,6 +22,8 @@ export class UserController {
     @Inject('userArr') readonly userArr: string[],
     @Inject('factory') readonly myFactory: string,
     private configService: ConfigService,
+    private boyService:BoyService,
+    private user1Service:Users1Service
   ) {
     //this.userService = new UserService()
   }
@@ -43,7 +47,7 @@ export class UserController {
   @Get('test')
   getHelloReq(@Query() request): any {
     console.log(request)
-    return this.userArr.join(',') + this.myFactory;
+    return this.userArr.join(',') + this.myFactory + this.boyService.findAll() + this.user1Service.findAll();
   }
   // @Get('*')
   // getHelloReq1(): string {

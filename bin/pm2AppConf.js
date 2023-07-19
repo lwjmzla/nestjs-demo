@@ -8,7 +8,7 @@ const os = require('os')
 const cpuCoreLength = os.cpus().length // CPU 几核
 
 module.exports = {
-  name: 'biz-editor-server',
+  name: 'nestjs-demo',
   script: 'dist/main.js',
   // watch: true,
   ignore_watch: ['node_modules', '__test__', 'logs'],
