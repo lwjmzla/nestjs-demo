@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { Users1Module } from './users1/users1.module'
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { BoyModule } from './boy/boy.module';
 import * as dotenv from 'dotenv';
@@ -11,29 +11,47 @@ import * as dotenv from 'dotenv';
 //const envFilePath = path.join(__dirname, `../.env.${process.env.NODE_ENV||'development'}`) // !或者直接传文件名，.env.development
 const envFilePath = `.env.${process.env.NODE_ENV||'development'}`
 console.log(envFilePath)
+const commonEnvObj = dotenv.config({path: '.env'}).parsed
+const currentEnvObj = dotenv.config({path: envFilePath}).parsed
+const dotenvObj = {...commonEnvObj, ...currentEnvObj}
+console.log(dotenvObj)
 import {Users1Service} from './users1/users1.service'
 
 //import LoadConfigFn from './config' // !yml 配置文件方式
 
 const mysqlConf = {
-  type:'mysql',           // 数据库类型
-  host:'127.0.0.1',       // 数据库的连接地址host
-  port:3306,              // 数据库的端口 3306
-  username:'root',        // 连接账号
-  password:'root123',     // 连接密码
-  database:'nestjs_demo',     // 连接的表名 // !应该是库名
+  type: dotenvObj.MYSQL_DB_TYPE,           // 数据库类型
+  host: dotenvObj.MYSQL_DB_HOST,       // 数据库的连接地址host
+  port: dotenvObj.MYSQL_DB_PORT,              // 数据库的端口 3306
+  username: dotenvObj.MYSQL_DB_USERNAME,        // 连接账号
+  password: dotenvObj.MYSQL_DB_PASSWORD,     // 连接密码
+  database: dotenvObj.MYSQL_DB_DATABASE,     // 连接的表名 // !应该是库名
   retryDelay:500,         // 重试连接数据库间隔
   retryAttempts:10,       // 允许重连次数
-  synchronize:true,       // 是否将实体同步到数据库
+  synchronize: Boolean(dotenvObj.MYSQL_DB_SYNC),       // 是否将实体同步到数据库
   autoLoadEntities:true,  // 自动加载实体配置，forFeature()注册的每个实体都自己动加载
   //"charset": "utf8mb4"
-}
+} as TypeOrmModuleOptions
 
-if (process.env.NODE_ENV === 'production') {
-  mysqlConf.host = '119.29.170.43'
-  mysqlConf.port = 3305
-  mysqlConf.password = '123'
-}
+// const mysqlConf = {
+//   type:'mysql',           // 数据库类型
+//   host:'127.0.0.1',       // 数据库的连接地址host
+//   port:3306,              // 数据库的端口 3306
+//   username:'root',        // 连接账号
+//   password:'root123',     // 连接密码
+//   database:'nestjs_demo',     // 连接的表名 // !应该是库名
+//   retryDelay:500,         // 重试连接数据库间隔
+//   retryAttempts:10,       // 允许重连次数
+//   synchronize:true,       // 是否将实体同步到数据库
+//   autoLoadEntities:true,  // 自动加载实体配置，forFeature()注册的每个实体都自己动加载
+//   //"charset": "utf8mb4"
+// }
+
+// if (process.env.NODE_ENV === 'production') {
+//   mysqlConf.host = '119.29.170.43'
+//   mysqlConf.port = 3305
+//   mysqlConf.password = '123'
+// }
 
 @Module({
   imports: [
@@ -43,7 +61,26 @@ if (process.env.NODE_ENV === 'production') {
       envFilePath, // ! 对应的dev或者prod环境变量
       //load: [LoadConfigFn]
     }),
-    TypeOrmModule.forRoot(mysqlConf as TypeOrmModuleOptions),
+    TypeOrmModule.forRoot(mysqlConf), // !环境变量同步的方式连接mysql
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory(configService: ConfigService) {
+    //     return {
+    //       type: configService.get('MYSQL_DB_TYPE'),           // 数据库类型
+    //       host: configService.get('MYSQL_DB_HOST'),       // 数据库的连接地址host
+    //       port: configService.get('MYSQL_DB_PORT'),              // 数据库的端口 3306
+    //       username: configService.get('MYSQL_DB_USERNAME'),        // 连接账号
+    //       password: configService.get('MYSQL_DB_PASSWORD'),     // 连接密码
+    //       database: configService.get('MYSQL_DB_DATABASE'),     // 连接的表名 // !应该是库名
+    //       retryDelay:500,         // 重试连接数据库间隔
+    //       retryAttempts:10,       // 允许重连次数
+    //       synchronize: configService.get('MYSQL_DB_SYNC'),       // 是否将实体同步到数据库
+    //       autoLoadEntities:true,  // 自动加载实体配置，forFeature()注册的每个实体都自己动加载
+    //       //"charset": "utf8mb4"
+    //     } as TypeOrmModuleOptions
+    //   },
+    // }),
     UserModule,
     Users1Module,
     BoyModule
