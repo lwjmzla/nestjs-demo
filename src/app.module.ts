@@ -61,26 +61,26 @@ const mysqlConf = {
       envFilePath, // ! 对应的dev或者prod环境变量
       //load: [LoadConfigFn]
     }),
-    TypeOrmModule.forRoot(mysqlConf), // !环境变量同步的方式连接mysql
-    // TypeOrmModule.forRootAsync({
-    //   imports: [ConfigModule],
-    //   inject: [ConfigService],
-    //   useFactory(configService: ConfigService) {
-    //     return {
-    //       type: configService.get('MYSQL_DB_TYPE'),           // 数据库类型
-    //       host: configService.get('MYSQL_DB_HOST'),       // 数据库的连接地址host
-    //       port: configService.get('MYSQL_DB_PORT'),              // 数据库的端口 3306
-    //       username: configService.get('MYSQL_DB_USERNAME'),        // 连接账号
-    //       password: configService.get('MYSQL_DB_PASSWORD'),     // 连接密码
-    //       database: configService.get('MYSQL_DB_DATABASE'),     // 连接的表名 // !应该是库名
-    //       retryDelay:500,         // 重试连接数据库间隔
-    //       retryAttempts:10,       // 允许重连次数
-    //       synchronize: configService.get('MYSQL_DB_SYNC'),       // 是否将实体同步到数据库
-    //       autoLoadEntities:true,  // 自动加载实体配置，forFeature()注册的每个实体都自己动加载
-    //       //"charset": "utf8mb4"
-    //     } as TypeOrmModuleOptions
-    //   },
-    // }),
+    //TypeOrmModule.forRoot(mysqlConf), // !环境变量同步的方式连接mysql
+    TypeOrmModule.forRootAsync({ // !环境变量异步的方式连接mysql
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory(configService: ConfigService) {
+        return {
+          type: configService.get('MYSQL_DB_TYPE'),           // 数据库类型
+          host: configService.get('MYSQL_DB_HOST'),       // 数据库的连接地址host
+          port: configService.get('MYSQL_DB_PORT'),              // 数据库的端口 3306
+          username: configService.get('MYSQL_DB_USERNAME'),        // 连接账号
+          password: configService.get('MYSQL_DB_PASSWORD'),     // 连接密码
+          database: configService.get('MYSQL_DB_DATABASE'),     // 连接的表名 // !应该是库名
+          retryDelay:500,         // 重试连接数据库间隔
+          retryAttempts:10,       // 允许重连次数
+          synchronize: Boolean(configService.get('MYSQL_DB_SYNC')),       // 是否将实体同步到数据库
+          autoLoadEntities:true,  // 自动加载实体配置，forFeature()注册的每个实体都自己动加载
+          //"charset": "utf8mb4"
+        } as TypeOrmModuleOptions
+      },
+    }),
     UserModule,
     Users1Module,
     BoyModule
