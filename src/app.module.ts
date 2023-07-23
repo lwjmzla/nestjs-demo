@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { Users1Module } from './users1/users1.module'
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { BoyModule } from './boy/boy.module';
 import * as dotenv from 'dotenv';
 //import * as path from 'path'; // !es6方式引入path
@@ -17,10 +17,10 @@ import {Users1Service} from './users1/users1.service'
 
 const mysqlConf = {
   type:'mysql',           // 数据库类型
-  host:'119.29.170.43',       // 数据库的连接地址host
-  port:3305,              // 数据库的端口 3306
+  host:'127.0.0.1',       // 数据库的连接地址host
+  port:3306,              // 数据库的端口 3306
   username:'root',        // 连接账号
-  password:'123',     // 连接密码
+  password:'root123',     // 连接密码
   database:'nestjs_demo',     // 连接的表名 // !应该是库名
   retryDelay:500,         // 重试连接数据库间隔
   retryAttempts:10,       // 允许重连次数
@@ -29,11 +29,11 @@ const mysqlConf = {
   //"charset": "utf8mb4"
 }
 
-// if (process.env.NODE_ENV === 'production') {
-//   mysqlConf.host = 'editor-mysql'
-//   mysqlConf.port = 3305
-//   mysqlConf.password = '123'
-// }
+if (process.env.NODE_ENV === 'production') {
+  mysqlConf.host = '119.29.170.43'
+  mysqlConf.port = 3305
+  mysqlConf.password = '123'
+}
 
 @Module({
   imports: [
@@ -43,7 +43,7 @@ const mysqlConf = {
       envFilePath, // ! 对应的dev或者prod环境变量
       //load: [LoadConfigFn]
     }),
-    TypeOrmModule.forRoot({...mysqlConf,type: 'mysql'}),
+    TypeOrmModule.forRoot(mysqlConf as TypeOrmModuleOptions),
     UserModule,
     Users1Module,
     BoyModule

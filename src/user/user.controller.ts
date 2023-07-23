@@ -125,6 +125,11 @@ export class UserController {
     return this.userService.updateUser(params.id);
   }
 
+  @Get('queryPage')
+  getUsersByGet(): any {
+    return this.userService.getUsers({} as any);
+  }
+
   @Post('queryPage')
   getUsers(@Body() params: UserDto): any {
     console.log(params);
