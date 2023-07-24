@@ -1,4 +1,6 @@
-import {Entity , Column ,PrimaryGeneratedColumn, CreateDateColumn, Generated} from 'typeorm'
+import {Entity , Column ,PrimaryGeneratedColumn, CreateDateColumn, Generated, OneToMany, JoinColumn, ManyToMany, JoinTable} from 'typeorm'
+import { Logs } from 'src/logs/logs.entity';
+import { Roles } from 'src/roles/roles.entity';
 
 @Entity()
 export class User{
@@ -26,6 +28,14 @@ export class User{
 
   @CreateDateColumn({type:"timestamp"}) // !键入时间
   entryTime:Date
+
+  @OneToMany(() => Logs, (logs) => logs.user) // !一对多 和logs.entity.ts的多对一 是一pair的
+  // @JoinColumn() // !这里不需要
+  logs: Logs[]
+
+  @ManyToMany(() => Roles, (roles) => roles.users)
+  @JoinTable({name: 'user_roles'}) // !多对多 生成关系表
+  roles: Roles[]
 
   // @Generated('uuid')
   // uuid:string

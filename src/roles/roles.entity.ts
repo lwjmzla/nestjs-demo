@@ -1,4 +1,5 @@
-import {Entity , Column ,PrimaryGeneratedColumn, CreateDateColumn, Generated} from 'typeorm'
+import {Entity , Column ,PrimaryGeneratedColumn, CreateDateColumn, Generated, ManyToMany, JoinTable} from 'typeorm'
+import { User } from 'src/user/entities/user.entity';
 
 @Entity()
 export class Roles{
@@ -11,5 +12,9 @@ export class Roles{
 
   @CreateDateColumn({type:"timestamp"}) // !键入时间
   entryTime:Date
+
+  @ManyToMany(() => User, (user) => user.roles)
+  //@JoinTable({name: 'roles_users'})
+  users: User[]
 
 }
