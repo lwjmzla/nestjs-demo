@@ -9,7 +9,7 @@ COPY . /app
 # 构建镜像时，一般用于做一些系统配置，安装必备的软件。可有多个 RUN
 # 设置时区
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
-RUN npm install -g cnpm --registry=https://registry.npmmirror.com && cnpm i -g pm2
+RUN npm install -g cnpm --registry=https://registry.npmmirror.com && cnpm i -g pm2 && pm2 install pm2-logrotate
 RUN cnpm i -g pnpm@7.26.2 && pnpm i
 # RUN npm run build
 
