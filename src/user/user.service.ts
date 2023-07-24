@@ -30,9 +30,9 @@ export class UserService {
 
   addUser(): any {
     const data = new User()
-    data.name='大睬';
-    data.age=19;
-    data.skill='精油按摩,日式按摩';
+    // data.name='大睬';
+    // data.age=19;
+    // data.skill='精油按摩,日式按摩';
     return this.user.save(data);
   }
 
@@ -43,8 +43,8 @@ export class UserService {
 
   updateUser( id: string ){
     const data = new User()
-    data.name="王小丫";
-    data.age=19
+    // data.name="王小丫";
+    // data.age=19
     return this.user.update(id,data)
   }
 
