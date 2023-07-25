@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { Users1Module } from './users1/users1.module'
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
 import { BoyModule } from './boy/boy.module';
 import * as dotenv from 'dotenv';
 import * as path from 'path'; // !es6方式引入path
@@ -83,6 +84,20 @@ const mysqlConf = {
           entities: [Roles,Logs] 
           //"charset": "utf8mb4"
         } as TypeOrmModuleOptions
+      },
+    }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory(configService: ConfigService) {
+        const host = '119.29.170.43'
+        const port = 27016
+        const database = configService.get('MYSQL_DB_DATABASE')
+        return {
+          uri: `mongodb://${host}:${port}/${database}`,
+          retryDelay:500,         // 重试连接数据库间隔
+          retryAttempts:10,       // 允许重连次数
+        } as MongooseModuleOptions
       },
     }),
     UserModule,
