@@ -64,4 +64,23 @@ export class UserService {
     }
     return this.user.find(opts);
   }
+
+  findAll() {
+    return this.user.find();
+  }
+  find(username: string) {
+    return this.user.findOne({
+      where: {username}
+    })
+  }
+  async create(user: User) {
+    const userTmp = await this.user.create(user)
+    return this.user.save(userTmp)
+  }
+  upadate(id: number, user: Partial<User>) {
+    return this.user.update(id,user)
+  }
+  remove(id: number) {
+    return this.user.delete(id)
+  }
 }

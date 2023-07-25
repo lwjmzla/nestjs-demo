@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
 import {BoyService} from './../boy/boy.service';
 import {Users1Service} from '../users1/users1.service'
+import { User } from './entities/user.entity';
 
 interface UserDto{
   name: string;
@@ -110,7 +111,11 @@ export class UserController {
   @Post('add')
   addUser(@Body() userDto: UserDto): any {
     console.log(userDto);
-    return this.userService.addUser();
+    const user = {
+      username: 'lwj',
+      password: '123456'
+    } as User
+    return this.userService.create(user);
   }
 
   @Post('delete')
@@ -127,7 +132,7 @@ export class UserController {
 
   @Get('queryPage')
   getUsersByGet(): any {
-    return this.userService.getUsers({} as any);
+    return this.userService.findAll();
   }
 
   @Post('queryPage')
