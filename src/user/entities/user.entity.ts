@@ -1,6 +1,7 @@
-import {Entity , Column ,PrimaryGeneratedColumn, CreateDateColumn, Generated, OneToMany, JoinColumn, ManyToMany, JoinTable} from 'typeorm'
+import {Entity , Column ,PrimaryGeneratedColumn, CreateDateColumn, Generated, OneToMany, JoinColumn, ManyToMany, JoinTable,OneToOne} from 'typeorm'
 import { Logs } from 'src/logs/logs.entity';
 import { Roles } from 'src/roles/roles.entity';
+import { Profile } from './profile.entity';
 
 @Entity()
 export class User{
@@ -36,6 +37,10 @@ export class User{
   @ManyToMany(() => Roles, (roles) => roles.users)
   @JoinTable({name: 'user_roles'}) // !多对多 生成关系表
   roles: Roles[]
+
+  @OneToOne(() => Profile, (profile) => profile.user) // !一对一
+  //@JoinColumn() // !创建userId，可以传参{name: 'lwjid'} 改变字段名
+  profile: Profile;
 
   // @Generated('uuid')
   // uuid:string

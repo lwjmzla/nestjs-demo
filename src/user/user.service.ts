@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {Like, Repository} from 'typeorm' // !Like模糊查询
 import {InjectRepository}from '@nestjs/typeorm'
 import {User} from './entities/user.entity'
+import { Logs } from 'src/logs/logs.entity';
 
 interface UserDto{
   name: string;
@@ -15,7 +16,10 @@ interface UserDto{
 export class UserService {
 
   // 依赖注入
-  constructor(@InjectRepository(User) private readonly user:Repository<User>){
+  constructor(
+    @InjectRepository(User) private readonly user:Repository<User>,
+    @InjectRepository(Logs) private readonly log:Repository<Logs>
+  ){
 
   }
 
@@ -82,5 +86,48 @@ export class UserService {
   }
   remove(id: number) {
     return this.user.delete(id)
+  }
+
+  findProfile(id: number) {
+    return this.user.findOne({
+      where: {id},
+      relations: {
+        profile: true
+      }
+    })
+  }
+
+  findLogs(id: number) {
+    return this.user.findOne({
+      where: {id},
+      relations: {
+        // profile: true, // !还可以连一起
+        logs: true
+      }
+    })
+  }
+
+  queryLogs() {
+    return this.log.find({
+      where: {result: 200,method: 'get',path: Like(`%asd%`)},
+    })
+  }
+
+  findLogsByGroup(id: number) {
+    // SELECT logs.result as result, COUNT(logs.result) AS count FROM logs, user WHERE logs.user_id= logs.userId AND user.id= 2 GROUP BY logs.result;
+    // return this.log.query("select* from logs") // !直接用mysql方式
+    // !QueryBuilder方式   -----  我其实只想用find方式
+    return this.log
+      .createQueryBuilder('logs')
+      .select('logs.result', 'result')
+      .addSelect('COUNT("logs.result")', 'count')
+      .leftJoinAndSelect('logs.user', 'user')
+      .where('user.id= :id', { id })
+      .groupBy('logs.result')
+      .orderBy('count', 'DESC')
+      .addOrderBy('result', 'DESC')
+      .offset(2)
+      .limit(3)
+      .getRawMany();
   }
 }

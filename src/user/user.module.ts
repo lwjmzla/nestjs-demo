@@ -5,12 +5,13 @@ import {TypeOrmModule} from '@nestjs/typeorm'
 //import { ConfigModule } from '@nestjs/config';
 import {User} from './entities/user.entity'
 import {Profile} from './entities/profile.entity'
+import { Logs } from 'src/logs/logs.entity';
 import {CounterMiddleware} from '../counter/counter.middleware'
 import {BoyService} from '../boy/boy.service';
 
 @Module({
   //imports: [ConfigModule.forRoot()], // !这种方式，要求每个使用到的module都要引入，麻烦，所以采用全局的
-  imports:[TypeOrmModule.forFeature([User,Profile])], // !将User实体 注册 到数据库
+  imports:[TypeOrmModule.forFeature([User,Profile,Logs])], // !将User实体 注册 到数据库
   controllers: [UserController],
   //providers: [UserService], // !把UserService里的功能注入到UserController
   providers: [

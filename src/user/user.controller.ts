@@ -140,4 +140,19 @@ export class UserController {
     console.log(params);
     return this.userService.getUsers(params);
   }
+
+  @Get('profile')
+  getProfile(): any {
+    return this.userService.findProfile(2);
+  }
+
+  @Get('logsById')
+  getLogsById(): any {
+    return this.userService.findLogs(2);
+  }
+
+  @Get('logs')
+  getLogs(): any {
+    return this.userService.queryLogs();
+  }
 }

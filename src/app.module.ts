@@ -81,7 +81,8 @@ const mysqlConf = {
           synchronize: Boolean(configService.get('MYSQL_DB_SYNC')),       // 是否将实体同步到数据库
           autoLoadEntities:true,  // !自动加载实体配置，将如xx.module.ts里的xx.forFeature([User])注册的每个实体自动加载，添加到配置对象的 entities数组
           //entities: [path.join(__dirname, '../', '**/**.entity{.ts,.js}')], // !报错，Cannot use import statement outside a module
-          entities: [Roles,Logs] 
+          entities: [Roles,Logs],
+          logging: process.env.NODE_ENV === 'development'
           //"charset": "utf8mb4"
         } as TypeOrmModuleOptions
       },
