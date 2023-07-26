@@ -1,4 +1,4 @@
-import { Controller, Get, Post,Req,Request,Inject,Query,HttpCode,Header,Redirect ,Bind,Param,Body} from '@nestjs/common';
+import { Controller, Get, Post,Req,Request,Inject,Query,HttpCode,Header,Redirect ,Bind,Param,Body, Logger} from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
@@ -16,6 +16,7 @@ interface UserDto{
 
 @Controller('user')
 export class UserController {
+  private logger = new Logger(UserController.name)
   //private readonly userService: UserService;
   constructor(
     //readonly userService: UserService, // !相当于上面和下面注释的两行，private readonly userService: UserService;   this.userService = new UserService()
@@ -27,6 +28,7 @@ export class UserController {
     private user1Service:Users1Service
   ) {
     //this.userService = new UserService()
+    this.logger.log('UserController init')
   }
 
   @Get()
@@ -132,6 +134,7 @@ export class UserController {
 
   @Get('queryPage')
   getUsersByGet(): any {
+    this.logger.log('UserController queryPage')
     return this.userService.findAll();
   }
 
