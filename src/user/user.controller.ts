@@ -1,4 +1,4 @@
-import { Controller, Get, Post,Req,Request,Inject,Query,HttpCode,Header,Redirect ,Bind,Param,Body, Logger} from '@nestjs/common';
+import { Controller, Get, Post,Req,Request,Inject,Query,HttpCode,Header,Redirect ,Bind,Param,Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException} from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
@@ -16,7 +16,7 @@ interface UserDto{
 
 @Controller('user')
 export class UserController {
-  private logger = new Logger(UserController.name)
+  //private logger = new Logger(UserController.name)
   //private readonly userService: UserService;
   constructor(
     //readonly userService: UserService, // !相当于上面和下面注释的两行，private readonly userService: UserService;   this.userService = new UserService()
@@ -25,7 +25,8 @@ export class UserController {
     @Inject('factory') readonly myFactory: string,
     private configService: ConfigService,
     private boyService:BoyService,
-    private user1Service:Users1Service
+    private user1Service:Users1Service,
+    private logger: Logger
   ) {
     //this.userService = new UserService()
     this.logger.log('UserController init')
@@ -134,7 +135,12 @@ export class UserController {
 
   @Get('queryPage')
   getUsersByGet(): any {
+    //throw new HttpException('Forbidden', HttpStatus.FORBIDDEN); // {"statusCode":403,"message":"Forbidden"}
+    //throw new NotFoundException('NotFoundException');
+    //throw new UnauthorizedException('UnauthorizedException');
     this.logger.log('UserController queryPage')
+    this.logger.warn('UserController queryPage')
+    this.logger.error('UserController queryPage')
     return this.userService.findAll();
   }
 
