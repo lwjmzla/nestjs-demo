@@ -20,6 +20,8 @@ import {Users1Service} from './users1/users1.service'
 import {Logs} from './logs/logs.entity'
 import {Roles} from './roles/roles.entity'
 import { LogsModule } from './logs/logs.module';
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './filters/http-exception.filter';
 
 //import LoadConfigFn from './config' // !yml 配置文件方式
 
@@ -57,7 +59,7 @@ const mysqlConf = {
 //   mysqlConf.password = '123'
 // }
 
-@Global() // !exports: [Logger]
+//@Global() // !exports: [Logger]
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -109,7 +111,15 @@ const mysqlConf = {
     LogsModule
   ], // !nest g module user 自动创建并引入了
   controllers: [AppController],
-  providers: [AppService,Users1Service,Logger],
-  exports: [Logger]
+  providers: [
+    AppService,
+    Users1Service,
+    //Logger, // !已经在 main.ts  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+    {
+      provide: APP_FILTER, //!全局过滤器，不需要在 main.ts app.useGlobalFilters(new AllExceptionsFilter(logger,httpAdapterHost));
+      useClass: AllExceptionsFilter,
+    },
+  ],
+  //exports: [Logger] // !已经在 main.ts  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 })
 export class AppModule {}
