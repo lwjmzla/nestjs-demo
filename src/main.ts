@@ -73,8 +73,8 @@ async function bootstrap() {
   });
   app.use(MiddleWareAll)
   app.setGlobalPrefix('api');
-  const httpAdapter = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new AllExceptionsFilter(logger,httpAdapter));
+  const httpAdapterHost = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new AllExceptionsFilter(logger,httpAdapterHost));
   const port = 3000
   await app.listen(port);
   // logger.log(`app运行在 ${port} 端口`)

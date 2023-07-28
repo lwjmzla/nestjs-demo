@@ -19,6 +19,7 @@ console.log(dotenvObj)
 import {Users1Service} from './users1/users1.service'
 import {Logs} from './logs/logs.entity'
 import {Roles} from './roles/roles.entity'
+import { LogsModule } from './logs/logs.module';
 
 //import LoadConfigFn from './config' // !yml 配置文件方式
 
@@ -104,7 +105,8 @@ const mysqlConf = {
     }),
     UserModule,
     Users1Module,
-    BoyModule
+    BoyModule,
+    LogsModule
   ], // !nest g module user 自动创建并引入了
   controllers: [AppController],
   providers: [AppService,Users1Service,Logger],
