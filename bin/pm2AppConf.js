@@ -9,7 +9,7 @@ const cpuCoreLength = os.cpus().length // CPU 几核
 
 module.exports = {
   name: 'nestjs-demo',
-  script: 'dist/main.js',
+  script: 'dist/src/main.js', // !添加了TypeOrm CLI  ormconfig.ts，就变目录了 ，好奇怪
   // watch: true,
   ignore_watch: ['node_modules', '__test__', 'logs'],
   instances: cpuCoreLength,

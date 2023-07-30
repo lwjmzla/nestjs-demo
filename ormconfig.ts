@@ -5,6 +5,9 @@ import {User} from './src/user/entities/user.entity'
 import {Profile} from './src/user/entities/profile.entity'
 import {Logs} from './src/logs/logs.entity'
 import {Roles} from './src/roles/roles.entity'
+import { DataSource, DataSourceOptions } from 'typeorm';
+
+// todo智能获取实体。
 
 const envFilePath = `.env.${process.env.NODE_ENV||'development'}`
 console.log(envFilePath)
@@ -13,7 +16,7 @@ const currentEnvObj = dotenv.config({path: envFilePath}).parsed
 const dotenvObj = {...commonEnvObj, ...currentEnvObj}
 console.log(dotenvObj)
 
-export default {
+export const connectionParams ={
   type: dotenvObj.MYSQL_DB_TYPE,           // 数据库类型
   host: dotenvObj.MYSQL_DB_HOST,       // 数据库的连接地址host
   port: dotenvObj.MYSQL_DB_PORT,              // 数据库的端口 3306
@@ -29,3 +32,9 @@ export default {
   logging: process.env.NODE_ENV === 'development'
   //"charset": "utf8mb4"
 } as TypeOrmModuleOptions
+
+export default new DataSource({
+  ...connectionParams,
+  migrations: ['src/migrations/**'],
+  subscribers: []
+} as DataSourceOptions)

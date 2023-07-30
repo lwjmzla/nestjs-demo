@@ -24,7 +24,7 @@ import {Roles} from './roles/roles.entity'
 import { LogsModule } from './logs/logs.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './filters/http-exception.filter';
-import ormconfig from '../ormconfig'
+import {connectionParams} from '../ormconfig'
 
 //import LoadConfigFn from './config' // !yml 配置文件方式
 
@@ -72,7 +72,7 @@ const mysqlConf = {
       //load: [LoadConfigFn]
     }),
     //TypeOrmModule.forRoot(mysqlConf), // !环境变量同步的方式连接mysql
-    TypeOrmModule.forRoot(ormconfig),
+    TypeOrmModule.forRoot(connectionParams),
     // TypeOrmModule.forRootAsync({ // !环境变量异步的方式连接mysql
     //   imports: [ConfigModule],
     //   inject: [ConfigService],
