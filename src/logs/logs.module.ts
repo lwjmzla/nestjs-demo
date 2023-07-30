@@ -13,7 +13,7 @@ import 'winston-daily-rotate-file'
           new winston.transports.Console({
             format: winston.format.combine(winston.format.timestamp(), utilities.format.nestLike()),
           }),
-          // 保存到文件
+          // 保存到文件 // !只要执行了new winston.transports.DailyRotateFile就会产生日志。
           new winston.transports.DailyRotateFile({
             // 日志文件文件夹，建议使用path.join()方式来处理，或者process.cwd()来设置，此处仅作示范
             dirname: 'logs',

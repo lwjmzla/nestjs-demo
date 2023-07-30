@@ -25,7 +25,8 @@
     "my-test:prod": "cross-env NODE_ENV=production node test-env.js",
     "pm2-dev": "cross-env NODE_ENV=development pm2 start bin/pm2-dev.config.js",
     "pm2-prod": "cross-env NODE_ENV=production pm2 start bin/pm2-dev.config.js",
-    "generate:models": "typeorm-model-generator -h 127.0.0.1 -p 3306 -d nestjs_demo -u root -x root123 -e mysql -o ./src/entities"
+    "generate:models": "typeorm-model-generator -h 127.0.0.1 -p 3306 -d nestjs_demo -u root -x root123 -e mysql -o ./src/entities",
+    "typeorm": "typeorm-ts-node-commonjs"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",

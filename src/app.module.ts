@@ -17,6 +17,8 @@ const currentEnvObj = dotenv.config({path: envFilePath}).parsed
 const dotenvObj = {...commonEnvObj, ...currentEnvObj}
 console.log(dotenvObj)
 import {Users1Service} from './users1/users1.service'
+import {User} from './user/entities/user.entity'
+import {Profile} from './user/entities/profile.entity'
 import {Logs} from './logs/logs.entity'
 import {Roles} from './roles/roles.entity'
 import { LogsModule } from './logs/logs.module';
@@ -83,9 +85,9 @@ const mysqlConf = {
           retryDelay:500,         // 重试连接数据库间隔
           retryAttempts:10,       // 允许重连次数
           synchronize: Boolean(configService.get('MYSQL_DB_SYNC')),       // 是否将实体同步到数据库
-          autoLoadEntities:true,  // !自动加载实体配置，将如xx.module.ts里的xx.forFeature([User])注册的每个实体自动加载，添加到配置对象的 entities数组
+          //autoLoadEntities:true,  // !自动加载实体配置，将如xx.module.ts里的xx.forFeature([User])注册的每个实体自动加载，添加到配置对象的 entities数组
           //entities: [path.join(__dirname, '../', '**/**.entity{.ts,.js}')], // !报错，Cannot use import statement outside a module
-          entities: [Roles,Logs],
+          entities: [User,Profile,Roles,Logs], // !手动注册所有实体
           logging: process.env.NODE_ENV === 'development'
           //"charset": "utf8mb4"
         } as TypeOrmModuleOptions
