@@ -7,8 +7,6 @@ import {Logs} from './src/logs/logs.entity'
 import {Roles} from './src/roles/roles.entity'
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-// todo智能获取实体。
-
 const envFilePath = `.env.${process.env.NODE_ENV||'development'}`
 console.log(envFilePath)
 const commonEnvObj = dotenv.config({path: '.env'}).parsed
@@ -27,8 +25,8 @@ export const connectionParams ={
   retryAttempts:10,       // 允许重连次数
   synchronize: Boolean(dotenvObj.MYSQL_DB_SYNC),       // 是否将实体同步到数据库
   //autoLoadEntities:true,  // !自动加载实体配置，将如xx.module.ts里的xx.forFeature([User])注册的每个实体自动加载，添加到配置对象的 entities数组
-  //entities: [path.join(__dirname, '../', '**/**.entity{.ts,.js}')], // !报错，Cannot use import statement outside a module
-  entities: [User,Profile,Roles,Logs], // !手动注册所有实体
+  //entities: [User,Profile,Roles,Logs], // !手动注册所有实体
+  entities: [__dirname + '**/**/*.entity{.ts,.js}'], // !智能获取实体。
   logging: process.env.NODE_ENV === 'development'
   //"charset": "utf8mb4"
 } as TypeOrmModuleOptions
