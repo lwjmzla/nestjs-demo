@@ -39,10 +39,12 @@ export class UserController {
   getUsers(@Query() query: getUserDto): any {
     console.log(query);
     const regNum = /^[0-9]+$/
-    // todo lodash
     for (const key in query) {
-      console.log(key)
+      if (regNum.test(query[key])) {
+        query[key] = parseInt(query[key])
+      }
     }
+    console.log(query);
     return this.userService.findAll(query);
   }
 
