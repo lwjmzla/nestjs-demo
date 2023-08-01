@@ -1,4 +1,4 @@
-import { Controller, Get, Post,Req,Request,Inject,Query,HttpCode,Header,Redirect ,Bind,Param,Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService} from '@nestjs/common';
+import { Controller, Get, Post, Req, Request, Inject, Query, HttpCode, Header, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService} from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
@@ -6,6 +6,7 @@ import {BoyService} from './../boy/boy.service';
 import {Users1Service} from '../users1/users1.service'
 import { User } from './entities/user.entity';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { getUserDto } from './dto';
 
 interface UserDto{
   name: string;
@@ -35,19 +36,14 @@ export class UserController {
   }
 
   @Get()
-  getHello(): any {
-    console.log('user');
-    // console.log(this.configService.get(ConfigEnum.DB)); // !获取环境变量.env的值，nestjs使用dotenv
-    // console.log(this.configService.get(ConfigEnum.DB_HOST));
-    // console.log(this.configService.get(ConfigEnum.DB_URL));
-    // console.log(this.configService.get('db1'));
-    const obj = {
-      // DB: this.configService.get(ConfigEnum.DB),
-      // DB_HOST: this.configService.get(ConfigEnum.DB_HOST),
-      // DB_URL: this.configService.get(ConfigEnum.DB_URL),
-      // db1: this.configService.get('db1') || '',
+  getUsers(@Query() query: getUserDto): any {
+    console.log(query);
+    const regNum = /^[0-9]+$/
+    // todo lodash
+    for (const key in query) {
+      console.log(key)
     }
-    return this.userService.getUser(obj);
+    return this.userService.findAll(query);
   }
 
   @Get('test')
@@ -143,11 +139,11 @@ export class UserController {
     this.logger.log('UserController queryPage')
     this.logger.warn('UserController queryPage')
     this.logger.error('UserController queryPage')
-    return this.userService.findAll();
+    return {};
   }
 
   @Post('queryPage')
-  getUsers(@Body() params: UserDto): any {
+  getUsers1(@Body() params: UserDto): any {
     console.log(params);
     return this.userService.getUsers(params);
   }

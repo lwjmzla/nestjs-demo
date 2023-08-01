@@ -27,7 +27,7 @@ export const connectionParams ={
   //autoLoadEntities:true,  // !自动加载实体配置，将如xx.module.ts里的xx.forFeature([User])注册的每个实体自动加载，添加到配置对象的 entities数组
   //entities: [User,Profile,Roles,Logs], // !手动注册所有实体
   entities: [__dirname + '**/**/*.entity{.ts,.js}'], // !智能获取实体。
-  logging: process.env.NODE_ENV === 'development'
+  logging: process.env.NODE_ENV === 'development' // !是否打印sql语句日志。
   //"charset": "utf8mb4"
 } as TypeOrmModuleOptions
 

@@ -3,6 +3,7 @@ import {Like, Repository} from 'typeorm' // !Like模糊查询
 import {InjectRepository}from '@nestjs/typeorm'
 import {User} from './entities/user.entity'
 import { Logs } from 'src/logs/logs.entity';
+import { getUserDto } from './dto';
 
 interface UserDto{
   name: string;
@@ -49,10 +50,10 @@ export class UserService {
     const data = new User()
     // data.name="王小丫";
     // data.age=19
-    return this.user.update(id,data)
+    return this.user.update(id, data)
   }
 
-  getUsers({name,age,skill,id}: UserDto):any{
+  getUsers({name, age, skill, id}: UserDto):any{
     const opts = {
       where: []
     }
@@ -69,8 +70,36 @@ export class UserService {
     return this.user.find(opts);
   }
 
-  findAll() {
-    return this.user.find();
+  findAll(query: getUserDto) {
+    const {page = 1, limit = 10, username, role, gender} = query
+    const take = limit
+    const skip = (page - 1) * take
+    return this.user.find({
+      select: { // !选择要展示的字段，password不被显示
+        id: true,
+        username: true,
+        entryTime: true,
+        profile: {
+          id: true,
+          gender: true
+        }
+      },
+      relations: {
+        profile: true,
+        roles: true
+      },
+      where: {
+        username, // !user自己的字段
+        profile: {
+          gender
+        },
+        roles: {
+          id: role
+        }
+      },
+      take,
+      skip
+    });
   }
   find(username: string) {
     return this.user.findOne({
@@ -82,7 +111,7 @@ export class UserService {
     return this.user.save(userTmp)
   }
   upadate(id: number, user: Partial<User>) {
-    return this.user.update(id,user)
+    return this.user.update(id, user)
   }
   remove(id: number) {
     return this.user.delete(id)
@@ -109,7 +138,7 @@ export class UserService {
 
   queryLogs() {
     return this.log.find({
-      where: {result: 200,method: 'get',path: Like(`%asd%`)},
+      where: {result: 200, method: 'get', path: Like(`%asd%`)},
     })
   }
 
