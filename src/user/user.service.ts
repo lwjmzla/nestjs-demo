@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import {Like, Repository} from 'typeorm' // !Like模糊查询
-import {InjectRepository}from '@nestjs/typeorm'
-import {User} from './entities/user.entity'
+import { FindManyOptions, Like, Repository } from 'typeorm' // !Like模糊查询
+import { InjectRepository }from '@nestjs/typeorm'
+import { User } from './entities/user.entity'
 import { Logs } from 'src/logs/logs.entity';
 import { getUserDto } from './dto';
 
@@ -53,28 +53,28 @@ export class UserService {
     return this.user.update(id, data)
   }
 
-  getUsers({name, age, skill, id}: UserDto):any{
+  getUsers({ name, age, skill, id }: UserDto):any{
     const opts = {
       where: []
     }
     // !好像where多个无效。
     if (name) {
-      opts.where.push({name: Like(`%${name}%`)})
+      opts.where.push({ name: Like(`%${name}%`) })
     }
     if (skill) {
-      opts.where.push({skill: Like(`%${skill}%`)})
+      opts.where.push({ skill: Like(`%${skill}%`) })
     }
     if (id) {
-      opts.where.push({id: Like(`%${id}%`)})
+      opts.where.push({ id: Like(`%${id}%`) })
     }
     return this.user.find(opts);
   }
 
   findAll(query: getUserDto) {
-    const {page = 1, limit = 10, username, role, gender} = query
+    const { page = 1, limit = 10, username, role, gender } = query
     const take = limit
     const skip = (page - 1) * take
-    return this.user.find({
+    const findOpts = {
       select: { // !选择要展示的字段，password不被显示
         id: true,
         username: true,
@@ -84,26 +84,39 @@ export class UserService {
           gender: true
         }
       },
+      order: {
+        entryTime: "DESC"
+      },
       relations: {
         profile: true,
         roles: true
       },
       where: {
-        username, // !user自己的字段
-        profile: {
-          gender
-        },
-        roles: {
-          id: role
-        }
+        //username, // !user自己的字段
+        // profile: {
+        //   gender
+        // },
+        // roles: {
+        //   id: role
+        // }
       },
       take,
       skip
-    });
+    } as FindManyOptions<User>
+    if (username) {
+      findOpts.where['username'] = Like(`%${username}%`)
+    }
+    if (gender) {
+      findOpts.where['profile'] = { gender }
+    }
+    if (role) {
+      findOpts.where['roles'] = { id: role }
+    }
+    return this.user.find(findOpts);
   }
   find(username: string) {
     return this.user.findOne({
-      where: {username}
+      where: { username }
     })
   }
   async create(user: User) {
@@ -119,7 +132,7 @@ export class UserService {
 
   findProfile(id: number) {
     return this.user.findOne({
-      where: {id},
+      where: { id },
       relations: {
         profile: true
       }
@@ -128,7 +141,7 @@ export class UserService {
 
   findLogs(id: number) {
     return this.user.findOne({
-      where: {id},
+      where: { id },
       relations: {
         // profile: true, // !还可以连一起
         logs: true
@@ -138,7 +151,7 @@ export class UserService {
 
   queryLogs() {
     return this.log.find({
-      where: {result: 200, method: 'get', path: Like(`%asd%`)},
+      where: { result: 200, method: 'get', path: Like(`%asd%`) },
     })
   }
 

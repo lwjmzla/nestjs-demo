@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Req, Request, Inject, Query, HttpCode, Header, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService} from '@nestjs/common';
+import { Controller, Get, Post, Req, Request, Inject, Query, HttpCode, Header, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
-import {BoyService} from './../boy/boy.service';
-import {Users1Service} from '../users1/users1.service'
+import { BoyService } from './../boy/boy.service';
+import { Users1Service } from '../users1/users1.service'
 import { User } from './entities/user.entity';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { getUserDto } from './dto';

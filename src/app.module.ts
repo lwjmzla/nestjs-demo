@@ -12,19 +12,21 @@ import * as path from 'path'; // !es6方式引入path
 //const envFilePath = path.join(__dirname, `../.env.${process.env.NODE_ENV||'development'}`) // !或者直接传文件名，.env.development
 const envFilePath = `.env.${process.env.NODE_ENV||'development'}`
 console.log(envFilePath)
-const commonEnvObj = dotenv.config({path: '.env'}).parsed
-const currentEnvObj = dotenv.config({path: envFilePath}).parsed
-const dotenvObj = {...commonEnvObj, ...currentEnvObj}
+console.log(process.env.MYSQL_DB_HOST) // !undefined
+const commonEnvObj = dotenv.config({ path: '.env' }).parsed
+const currentEnvObj = dotenv.config({ path: envFilePath }).parsed
+const dotenvObj = { ...commonEnvObj, ...currentEnvObj }
 console.log(dotenvObj)
-import {Users1Service} from './users1/users1.service'
-import {User} from './user/entities/user.entity'
-import {Profile} from './user/entities/profile.entity'
-import {Logs} from './logs/logs.entity'
-import {Roles} from './roles/roles.entity'
+console.log(process.env.MYSQL_DB_HOST) // !引入dotenv后，会注入到process.env
+import { Users1Service } from './users1/users1.service'
+import { User } from './user/entities/user.entity'
+import { Profile } from './user/entities/profile.entity'
+import { Logs } from './logs/logs.entity'
+import { Roles } from './roles/roles.entity'
 import { LogsModule } from './logs/logs.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './filters/http-exception.filter';
-import {connectionParams} from '../ormconfig'
+import { connectionParams } from '../ormconfig'
 
 //import LoadConfigFn from './config' // !yml 配置文件方式
 
@@ -67,7 +69,7 @@ const mysqlConf = {
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [() => dotenv.config({path: '.env'})], // !公共的环境变量  其实load最灵活，只需要满足 [() => ({key:val...})]的形式,使用this.configService.get(key)
+      load: [() => dotenv.config({ path: '.env' })], // !公共的环境变量  其实load最灵活，只需要满足 [() => ({key:val...})]的形式,使用this.configService.get(key)
       envFilePath, // ! 对应的dev或者prod环境变量
       //load: [LoadConfigFn]
     }),
