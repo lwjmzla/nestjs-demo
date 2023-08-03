@@ -69,8 +69,11 @@ const mysqlConf = {
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [() => dotenv.config({ path: '.env' })], // !公共的环境变量  其实load最灵活，只需要满足 [() => ({key:val...})]的形式,使用this.configService.get(key)
-      envFilePath, // ! 对应的dev或者prod环境变量
+      //load: [() => dotenv.config({ path: '.env' })], // !公共的环境变量  其实load最灵活，只需要满足 [() => ({key:val...})]的形式,使用this.configService.get(key)
+      //envFilePath, // ! 对应的dev或者prod环境变量
+
+      load: [() => (dotenvObj)],
+
       //load: [LoadConfigFn]
     }),
     //TypeOrmModule.forRoot(mysqlConf), // !环境变量同步的方式连接mysql

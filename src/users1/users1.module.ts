@@ -1,4 +1,4 @@
-import { NestModule, MiddlewareConsumer, Module, RequestMethod,Global } from '@nestjs/common';
+import { NestModule, MiddlewareConsumer, Module, RequestMethod, Global } from '@nestjs/common';
 import { Users1Service } from './users1.service';
 import { Users1Controller } from './users1.controller';
 import { CounterMiddleware } from '../counter/counter.middleware'

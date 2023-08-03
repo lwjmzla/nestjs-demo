@@ -1,13 +1,13 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { createLogger } from 'winston';
-import { WinstonModule, utilities,WINSTON_MODULE_NEST_PROVIDER  } from 'nest-winston';
+import { WinstonModule, utilities, WINSTON_MODULE_NEST_PROVIDER  } from 'nest-winston';
 import * as winston from 'winston';
-//import { Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 // import 'winston-daily-rotate-file'
 import { AllExceptionsFilter } from './filters/http-exception.filter';
 
-function MiddleWareAll(req:any,res:any,next:any){
+function MiddleWareAll(req:any, res:any, next:any){
   console.log('我是全局中间件.....')
   next()
 }
@@ -78,7 +78,9 @@ async function bootstrap() {
   //app.useGlobalFilters(new AllExceptionsFilter(logger,httpAdapterHost));
 
   const port = 3000
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
+  const serverUrl = await app.getUrl();
+  Logger.log(`api服务已经启动,请访问: ${serverUrl}`); // !全局注册后的logger，也是Winston类型
   // logger.log(`app运行在 ${port} 端口`)
   // logger.warn(`app运行在 ${port} 端口`)
   // logger.error(`app运行在 ${port} 端口`)
