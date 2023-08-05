@@ -2,7 +2,7 @@
 export interface getUserDto{
   page: number;
   limit?: number;
-  username: string;
+  username?: string;
   role?: number; // !下拉框选择
   gender?:number;
 }

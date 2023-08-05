@@ -10,6 +10,7 @@ import {
 import { HttpAdapterHost } from '@nestjs/core';
 import * as requestIp from 'request-ip';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { QueryFailedError } from 'typeorm';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -32,6 +33,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const httpStatus = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    // !可以细化过滤信息
+    let msg = exception['reponse'] || 'Internal Server Error'
+    if (exception instanceof QueryFailedError) {
+      msg =exception.message
+      // if (exception.driverError.errno && exception.driverError.errno === 1062) {
+      //   msg = '唯一索引冲突'
+      // }
+    }
+
     const responseBody = {
       headers: request.headers,
       query: request.query,
@@ -45,11 +55,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
       error: exception['reponse'] || 'Internal Server Error',
       hostname: httpAdapter.getRequestHostname(request),
       message: exception instanceof HttpException ? (exception.getResponse() as HttpException).message : [(exception as Error).message.toString()],
+      msg,
       method: httpAdapter.getRequestMethod(request),
       stackTrace: exception instanceof HttpException ? '' : (exception as Error).stack
     };
 
-    this.logger.error('[AllExceptionsFilter]',responseBody)
+    this.logger.error('[AllExceptionsFilter]', responseBody)
+    // !responseBody 打印出来没问题，但返回给用户的时候要精简参数
     httpAdapter.reply(response, responseBody, httpStatus);
   }
 }

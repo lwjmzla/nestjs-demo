@@ -46,13 +46,6 @@ export class UserService {
     return this.user.delete(id)
   }
 
-  updateUser( id: string ){
-    const data = new User()
-    // data.name="王小丫";
-    // data.age=19
-    return this.user.update(id, data)
-  }
-
   getUsers({ name, age, skill, id }: UserDto):any{
     const opts = {
       where: []
@@ -81,7 +74,9 @@ export class UserService {
         entryTime: true,
         profile: {
           id: true,
-          gender: true
+          gender: true,
+          photo: true,
+          address: true
         }
       },
       order: {
@@ -123,11 +118,19 @@ export class UserService {
     const userTmp = await this.user.create(user)
     return this.user.save(userTmp)
   }
-  upadate(id: number, user: Partial<User>) {
-    return this.user.update(id, user)
+  async update(id: number, user: Partial<User>) {
+    const userTemp = await this.findProfile(id)
+    console.log(userTemp) // !userTemp 和 user 结构一致的级联关系
+    const newUser = this.user.merge(userTemp, user) // !实体那里还要添加{ cascade: true }
+    return this.user.save(newUser) // !联合模型更新,需要使用save方法或者queryBuilder
+    //return this.user.update(id, user) // !只适合单模型的更新~
   }
-  remove(id: number) {
-    return this.user.delete(id)
+  async remove(id: number) {
+    //return this.user.delete(id) // !硬删除
+    const user = await this.user.findOne({
+      where: { id }
+    })
+    return this.user.remove(user) // !触发 AfterRemove钩子
   }
 
   findProfile(id: number) {

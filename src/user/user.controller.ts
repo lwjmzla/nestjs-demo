@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Request, Inject, Query, HttpCode, Header, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService } from '@nestjs/common';
+import { Controller, Get, Post, Req, Request, Inject, Query, HttpCode, Header, Headers, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService, UseFilters } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
@@ -7,6 +7,9 @@ import { Users1Service } from '../users1/users1.service'
 import { User } from './entities/user.entity';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { getUserDto } from './dto';
+import { TypeormFilter } from 'src/filters/typeorm.filter';
+import { Profile } from './entities/profile.entity';
+import { TypeORMError } from 'typeorm';
 
 interface UserDto{
   name: string;
@@ -17,6 +20,8 @@ interface UserDto{
 }
 
 @Controller('user')
+//@UseFilters(new TypeormFilter()) // !局部filter，这种方式构造函数的参数要传参
+@UseFilters(TypeormFilter) // !局部filter，这种方式构造函数的参数只需要inject，   // !可以针对Controller和路由控制
 export class UserController {
   //private logger = new Logger(UserController.name)
   //private readonly userService: UserService;
@@ -112,25 +117,41 @@ export class UserController {
   }
 
   @Post('add')
-  addUser(@Body() userDto: UserDto): any {
+  // @UseFilters(TypeormFilter) // !可以针对路由控制
+  addUser(@Body() userDto: User): any {
     console.log(userDto);
-    const user = {
-      username: 'lwj',
-      password: '123456'
-    } as User
-    return this.userService.create(user);
+    return this.userService.create(userDto);
   }
 
-  @Post('delete')
-  delUser(@Body() params: {id: string}): any {
+  @Post('delUser')
+  delUser(@Body() params: {id: number}): any {
     console.log(params);
-    return this.userService.delUser(params.id);
+    return this.userService.remove(params.id);
   }
 
-  @Post('update')
-  updateUser(@Body() params: {id: string}): any {
-    console.log(params);
-    return this.userService.updateUser(params.id);
+  @Post('updateUser')
+  updateUser(@Body() params: {id: number} & User & Profile, @Headers('Authorization') authorization: any): any {
+    console.log(authorization)
+    // !鉴权
+    if (authorization === 'Bearer') {
+      console.log(params);
+      const { id, username, password, gender, photo, address } = params
+      delete params.id
+      const userInfo = {
+        username,
+        password,
+        profile: {
+          gender,
+          photo,
+          address
+        }
+      } as User
+      console.log(userInfo)
+      return this.userService.update(id, userInfo);
+    } else {
+      throw new UnauthorizedException()
+      //throw new TypeORMError()
+    }
   }
 
   @Get('queryPage')
