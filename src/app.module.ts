@@ -27,6 +27,7 @@ import { LogsModule } from './logs/logs.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './filters/http-exception.filter';
 import { connectionParams } from '../ormconfig'
+import { AuthModule } from './auth/auth.module';
 
 //import LoadConfigFn from './config' // !yml 配置文件方式
 
@@ -117,7 +118,8 @@ const mysqlConf = {
     UserModule,
     Users1Module,
     BoyModule,
-    LogsModule
+    LogsModule,
+    AuthModule
   ], // !nest g module user 自动创建并引入了
   controllers: [AppController],
   providers: [

@@ -15,11 +15,12 @@ import { BoyService } from '../boy/boy.service';
   controllers: [UserController],
   //providers: [UserService], // !把UserService里的功能注入到UserController
   providers: [
-    BoyService,
-    {
-      provide: 'user',
-      useClass: UserService
-    },
+    BoyService, // !这种方式引入供给user.controller.ts、.user.service.ts使用，BoyService没啥依赖还好，有其他依赖的话需要一并引入，很麻烦！！！
+    UserService,
+    // {
+    //   provide: 'user',
+    //   useClass: UserService
+    // },
     {
       provide: 'userArr',
       useValue: ['lwj', 'lwb', 'lwz']
@@ -30,7 +31,8 @@ import { BoyService } from '../boy/boy.service';
         return ' my factory'
       },
     }
-  ]
+  ],
+  exports: [UserService]
 })
 
 // !局部中间件

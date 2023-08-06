@@ -26,8 +26,8 @@ export class UserController {
   //private logger = new Logger(UserController.name)
   //private readonly userService: UserService;
   constructor(
-    //readonly userService: UserService, // !相当于上面和下面注释的两行，private readonly userService: UserService;   this.userService = new UserService()
-    @Inject('user') readonly userService: UserService,
+    readonly userService: UserService, // !相当于上面和下面注释的两行，private readonly userService: UserService;   this.userService = new UserService()
+    //@Inject('user') readonly userService: UserService,
     @Inject('userArr') readonly userArr: string[],
     @Inject('factory') readonly myFactory: string,
     private configService: ConfigService,
@@ -137,7 +137,7 @@ export class UserController {
       console.log(params);
       const { id, username, password, gender, photo, address } = params
       delete params.id
-      const userInfo = {
+      const userInfo = { // !其实前端传参的时候按下面格式传，后端就不用转换一层了，所以定义好。
         username,
         password,
         profile: {

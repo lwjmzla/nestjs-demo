@@ -4,6 +4,7 @@ import { InjectRepository }from '@nestjs/typeorm'
 import { User } from './entities/user.entity'
 import { Logs } from 'src/logs/logs.entity';
 import { getUserDto } from './dto';
+import { BoyService } from '../boy/boy.service';
 
 interface UserDto{
   name: string;
@@ -19,9 +20,10 @@ export class UserService {
   // 依赖注入
   constructor(
     @InjectRepository(User) private readonly user:Repository<User>,
-    @InjectRepository(Logs) private readonly log:Repository<Logs>
+    @InjectRepository(Logs) private readonly log:Repository<Logs>,
+    private boyService:BoyService,
   ){
-
+    console.log(this.boyService.findAll())
   }
 
   getUser(obj): any {
@@ -114,7 +116,7 @@ export class UserService {
       where: { username }
     })
   }
-  async create(user: User) {
+  async create(user: Partial<User>) {
     const userTmp = await this.user.create(user)
     return this.user.save(userTmp)
   }
@@ -124,6 +126,8 @@ export class UserService {
     const newUser = this.user.merge(userTemp, user) // !实体那里还要添加{ cascade: true }
     return this.user.save(newUser) // !联合模型更新,需要使用save方法或者queryBuilder
     //return this.user.update(id, user) // !只适合单模型的更新~
+
+    // todo研究更新roles的  10-17前后端联调页面CURD操作及接口响应(作业).mp4
   }
   async remove(id: number) {
     //return this.user.delete(id) // !硬删除

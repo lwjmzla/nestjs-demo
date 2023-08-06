@@ -34,12 +34,20 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const httpStatus = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
     // !可以细化过滤信息
-    let msg = exception['reponse'] || 'Internal Server Error'
+    // console.log(exception)
+    // console.log(exception instanceof HttpException)
+    
+    let msg = exception['reponse'] || exception['message'] || 'Internal Server Error'
     if (exception instanceof QueryFailedError) {
       msg =exception.message
       // if (exception.driverError.errno && exception.driverError.errno === 1062) {
       //   msg = '唯一索引冲突'
       // }
+    }
+    if (exception instanceof HttpException) {
+      console.log(exception.getResponse())
+      console.log(exception.message)
+      msg = exception.getResponse() || exception.message
     }
 
     const responseBody = {
@@ -54,7 +62,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       exception: exception['name'],
       error: exception['reponse'] || 'Internal Server Error',
       hostname: httpAdapter.getRequestHostname(request),
-      message: exception instanceof HttpException ? (exception.getResponse() as HttpException).message : [(exception as Error).message.toString()],
+      message: exception instanceof HttpException ? (exception.getResponse()) : [(exception as Error).message.toString()],
       msg,
       method: httpAdapter.getRequestMethod(request),
       stackTrace: exception instanceof HttpException ? '' : (exception as Error).stack
