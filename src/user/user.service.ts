@@ -3,7 +3,7 @@ import { FindManyOptions, Like, Repository } from 'typeorm' // !Like模糊查询
 import { InjectRepository }from '@nestjs/typeorm'
 import { User } from './entities/user.entity'
 import { Logs } from 'src/logs/logs.entity';
-import { getUserDto } from './dto';
+import { GetUserDto } from './dto';
 import { BoyService } from '../boy/boy.service';
 
 interface UserDto{
@@ -65,7 +65,7 @@ export class UserService {
     return this.user.find(opts);
   }
 
-  findAll(query: getUserDto) {
+  findAll(query: GetUserDto) {
     const { page = 1, limit = 10, username, role, gender } = query
     const take = limit
     const skip = (page - 1) * take

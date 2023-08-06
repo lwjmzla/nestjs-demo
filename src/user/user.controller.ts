@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Request, Inject, Query, HttpCode, Header, Headers, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService, UseFilters } from '@nestjs/common';
+import { Controller, Get, Post, Req, Request, Inject, Query, HttpCode, Header, Headers, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService, UseFilters, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
@@ -6,10 +6,12 @@ import { BoyService } from './../boy/boy.service';
 import { Users1Service } from '../users1/users1.service'
 import { User } from './entities/user.entity';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { getUserDto } from './dto';
+import { GetUserDto } from './dto';
 import { TypeormFilter } from 'src/filters/typeorm.filter';
 import { Profile } from './entities/profile.entity';
 import { TypeORMError } from 'typeorm';
+import { GetUserPipe } from './pipes/index.pipe';
+import { ParseIntPipeCustom } from './pipes/parse.int.pipe';
 
 interface UserDto{
   name: string;
@@ -40,16 +42,24 @@ export class UserController {
     this.logger.log('UserController init')
   }
 
-  @Get()
-  getUsers(@Query() query: getUserDto): any {
-    console.log(query);
-    const regNum = /^[0-9]+$/
-    for (const key in query) {
-      if (regNum.test(query[key])) {
-        query[key] = parseInt(query[key])
-      }
-    }
-    console.log(query);
+  @Get() // !PipeTransform
+  getUsers(@Query(GetUserPipe) query: GetUserDto): any {
+    console.log('getUsers', query);
+    return this.userService.findAll(query);
+  }
+
+  @Get('getAll')
+  getAllUsers(
+    @Query('page', ParseIntPipeCustom) page: number, // !ParseIntPipeCustom 比ParseIntPipe好太多了,ParseIntPipe没值的时候会报错
+    //@Query('limit', ParseIntPipeCustom) limit: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    //@Query('limit', new DefaultValuePipe(10), ParseIntPipeCustom) limit: number,
+    @Query('username') username: string,
+    @Query('role', ParseIntPipeCustom) role: number,
+    @Query('gender', ParseIntPipeCustom) gender: number,
+  ): any {
+    const query = { page, limit, username, role, gender }
+    console.log('getAll', query)
     return this.userService.findAll(query);
   }
 
@@ -92,10 +102,10 @@ export class UserController {
   }
 
   /** 路由参数 */
-  @Get('param1/:id')
-  findOne1(@Param() params): string {
-    console.log(params.id);
-    return `This action returns a param1 #${params.id} cat`;
+  @Get('param1/:id') // !简单的Pipe
+  findOne1(@Param('id', ParseIntPipe) id): string {
+    console.log(id);
+    return `This action returns a param1 #${id} cat`;
   }
 
   @Get('param2/:id')

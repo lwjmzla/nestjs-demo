@@ -6,6 +6,7 @@ import {
   HttpStatus,
   LoggerService,
   Inject,
+  BadRequestException,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import * as requestIp from 'request-ip';
@@ -48,6 +49,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
       console.log(exception.getResponse())
       console.log(exception.message)
       msg = exception.getResponse() || exception.message
+    }
+
+    if (exception instanceof BadRequestException) {
+      if (msg?.message?.length) {
+        msg = msg?.message[0]
+      }
     }
 
     const responseBody = {

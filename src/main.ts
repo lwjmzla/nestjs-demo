@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { createLogger } from 'winston';
 import { WinstonModule, utilities, WINSTON_MODULE_NEST_PROVIDER  } from 'nest-winston';
 import * as winston from 'winston';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 // import 'winston-daily-rotate-file'
 import { AllExceptionsFilter } from './filters/http-exception.filter';
 
@@ -76,7 +76,9 @@ async function bootstrap() {
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   //const httpAdapterHost = app.get(HttpAdapterHost);
   //app.useGlobalFilters(new AllExceptionsFilter(logger,httpAdapterHost));
-
+  // app.useGlobalPipes(new ValidationPipe({
+  //   // whitelist: true // !去除在类上不存在的字段。
+  // }));
   const port = 3000
   await app.listen(port, '0.0.0.0');
   const serverUrl = await app.getUrl();
