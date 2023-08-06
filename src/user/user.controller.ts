@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Request, Inject, Query, HttpCode, Header, Headers, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService, UseFilters, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
+import { Controller, Get, Post, Req, Request, Inject, Query, HttpCode, Header, Headers, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService, UseFilters, ParseIntPipe, DefaultValuePipe, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
@@ -12,6 +12,7 @@ import { Profile } from './entities/profile.entity';
 import { TypeORMError } from 'typeorm';
 import { GetUserPipe } from './pipes/index.pipe';
 import { ParseIntPipeCustom } from './pipes/parse.int.pipe';
+import { AuthGuard } from '@nestjs/passport';
 
 interface UserDto{
   name: string;
@@ -182,8 +183,10 @@ export class UserController {
   }
 
   @Get('profile')
-  getProfile(): any {
-    return this.userService.findProfile(2);
+  @UseGuards(AuthGuard('jwt'))
+  getProfile(@Query('id', ParseIntPipe) id: number, @Req() req): any {
+    console.log(req.user)
+    return this.userService.findProfile(id);
   }
 
   @Get('logsById')

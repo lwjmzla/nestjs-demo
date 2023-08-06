@@ -17,10 +17,13 @@ export class AuthController {
   }
 
   @Post('/signin')
-  signin(@Body() dto: SigninUserDto) {
+  async signin(@Body() dto: SigninUserDto) {
     const { username, password } =dto
-    return this.authService.signin(username, password)
-    //return this.userService.findAll(dto)
+    const token = await this.authService.signin(username, password)
+    return {
+      username,
+      access_token: token
+    }
   }
 
   @Post('/signup')
