@@ -164,4 +164,9 @@ export class UserController {
   getLogs(): any {
     return this.userService.queryLogs();
   }
+
+  @Post('userPage')
+  userPage(@Body() body) {
+    return this.userService.userPage(body);
+  }
 }

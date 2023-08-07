@@ -4,6 +4,8 @@ import { InjectRepository }from '@nestjs/typeorm'
 import { User } from './entities/user.entity'
 import { Logs } from 'src/logs/logs.entity';
 import { getUserDto } from './dto';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 
 interface UserDto{
   name: string;
@@ -19,9 +21,22 @@ export class UserService {
   // 依赖注入
   constructor(
     @InjectRepository(User) private readonly user:Repository<User>,
-    @InjectRepository(Logs) private readonly log:Repository<Logs>
+    @InjectRepository(Logs) private readonly log:Repository<Logs>,
+    private readonly httpService: HttpService
   ){
 
+  }
+
+  async userPage(body) {
+    console.log(body)
+    const userPage = this.httpService.post(
+      'http://8.134.77.199:10280/system-csn/api/msg-api/msg/record/page',
+      body,
+    );
+    console.log(userPage)
+    const { data }: any = await lastValueFrom(userPage);
+    console.log(data)
+    return data.data
   }
 
   getUser(obj): any {

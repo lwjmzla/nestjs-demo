@@ -6,6 +6,7 @@ import { Users1Module } from './users1/users1.module'
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
+import { HttpModule } from '@nestjs/axios';
 import { BoyModule } from './boy/boy.module';
 import * as dotenv from 'dotenv';
 import * as path from 'path'; // !es6方式引入path
@@ -67,6 +68,7 @@ const mysqlConf = {
 //@Global() // !exports: [Logger]
 @Module({
   imports: [
+    HttpModule,
     ConfigModule.forRoot({
       isGlobal: true,
       //load: [() => dotenv.config({ path: '.env' })], // !公共的环境变量  其实load最灵活，只需要满足 [() => ({key:val...})]的形式,使用this.configService.get(key)

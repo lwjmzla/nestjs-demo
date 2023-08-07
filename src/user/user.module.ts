@@ -8,10 +8,11 @@ import { User } from './entities/user.entity'
 import { Logs } from 'src/logs/logs.entity';
 import { CounterMiddleware } from '../counter/counter.middleware'
 import { BoyService } from '../boy/boy.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   //imports: [ConfigModule.forRoot()], // !这种方式，要求每个使用到的module都要引入，麻烦，所以采用全局的
-  imports:[TypeOrmModule.forFeature([User, Logs])], // !user.service.ts 注入的实体，需要先在这里引入。
+  imports:[HttpModule, TypeOrmModule.forFeature([User, Logs])], // !user.service.ts 注入的实体，需要先在这里引入。
   controllers: [UserController],
   //providers: [UserService], // !把UserService里的功能注入到UserController
   providers: [
