@@ -1,4 +1,4 @@
-import { Global, Logger, Module } from '@nestjs/common';
+import { Global, HttpStatus, Logger, Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
@@ -25,9 +25,10 @@ import { Profile } from './user/entities/profile.entity'
 import { Logs } from './logs/logs.entity'
 import { Roles } from './roles/roles.entity'
 import { LogsModule } from './logs/logs.module';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { AllExceptionsFilter } from './filters/http-exception.filter';
 import { connectionParams } from '../ormconfig'
+import { AuthModule } from './auth/auth.module';
 
 //import LoadConfigFn from './config' // !yml 配置文件方式
 
@@ -119,7 +120,8 @@ const mysqlConf = {
     UserModule,
     Users1Module,
     BoyModule,
-    LogsModule
+    LogsModule,
+    AuthModule
   ], // !nest g module user 自动创建并引入了
   controllers: [AppController],
   providers: [
@@ -130,6 +132,20 @@ const mysqlConf = {
       provide: APP_FILTER, //!全局过滤器，不需要在 main.ts app.useGlobalFilters(new AllExceptionsFilter(logger,httpAdapterHost));
       useClass: AllExceptionsFilter,
     },
+    // {
+		// 	provide: APP_GUARD,
+		// 	useClass: AuthGuard,
+		// },
+		{
+			provide: APP_PIPE,
+			useValue: new ValidationPipe({
+				// transform: true,
+				// errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+				// whitelist: true, //!去除在类上不存在的字段。
+				// forbidNonWhitelisted: true,
+				// forbidUnknownValues: true,
+			}),
+		},
   ],
   //exports: [Logger] // !已经在 main.ts  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 })

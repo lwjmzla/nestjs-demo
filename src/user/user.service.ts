@@ -3,7 +3,8 @@ import { FindManyOptions, Like, Repository } from 'typeorm' // !Like模糊查询
 import { InjectRepository }from '@nestjs/typeorm'
 import { User } from './entities/user.entity'
 import { Logs } from 'src/logs/logs.entity';
-import { getUserDto } from './dto';
+import { GetUserDto } from './dto';
+import { BoyService } from '../boy/boy.service';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 
@@ -22,6 +23,7 @@ export class UserService {
   constructor(
     @InjectRepository(User) private readonly user:Repository<User>,
     @InjectRepository(Logs) private readonly log:Repository<Logs>,
+    private boyService:BoyService,
     private readonly httpService: HttpService
   ){
 
@@ -61,13 +63,6 @@ export class UserService {
     return this.user.delete(id)
   }
 
-  updateUser( id: string ){
-    const data = new User()
-    // data.name="王小丫";
-    // data.age=19
-    return this.user.update(id, data)
-  }
-
   getUsers({ name, age, skill, id }: UserDto):any{
     const opts = {
       where: []
@@ -85,7 +80,7 @@ export class UserService {
     return this.user.find(opts);
   }
 
-  findAll(query: getUserDto) {
+  findAll(query: GetUserDto) {
     const { page = 1, limit = 10, username, role, gender } = query
     const take = limit
     const skip = (page - 1) * take
@@ -96,7 +91,9 @@ export class UserService {
         entryTime: true,
         profile: {
           id: true,
-          gender: true
+          gender: true,
+          photo: true,
+          address: true
         }
       },
       order: {
@@ -134,15 +131,25 @@ export class UserService {
       where: { username }
     })
   }
-  async create(user: User) {
+  async create(user: Partial<User>) {
     const userTmp = await this.user.create(user)
     return this.user.save(userTmp)
   }
-  upadate(id: number, user: Partial<User>) {
-    return this.user.update(id, user)
+  async update(id: number, user: Partial<User>) {
+    const userTemp = await this.findProfile(id)
+    console.log(userTemp) // !userTemp 和 user 结构一致的级联关系
+    const newUser = this.user.merge(userTemp, user) // !实体那里还要添加{ cascade: true }
+    return this.user.save(newUser) // !联合模型更新,需要使用save方法或者queryBuilder
+    //return this.user.update(id, user) // !只适合单模型的更新~
+
+    // todo研究更新roles的  10-17前后端联调页面CURD操作及接口响应(作业).mp4
   }
-  remove(id: number) {
-    return this.user.delete(id)
+  async remove(id: number) {
+    //return this.user.delete(id) // !硬删除
+    const user = await this.user.findOne({
+      where: { id }
+    })
+    return this.user.remove(user) // !触发 AfterRemove钩子
   }
 
   findProfile(id: number) {

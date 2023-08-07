@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Request, Inject, Query, HttpCode, Header, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService } from '@nestjs/common';
+import { Controller, Get, Post, Req, Request, Inject, Query, HttpCode, Header, Headers, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService, UseFilters, ParseIntPipe, DefaultValuePipe, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
@@ -6,7 +6,13 @@ import { BoyService } from './../boy/boy.service';
 import { Users1Service } from '../users1/users1.service'
 import { User } from './entities/user.entity';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { getUserDto } from './dto';
+import { GetUserDto } from './dto';
+import { TypeormFilter } from 'src/filters/typeorm.filter';
+import { Profile } from './entities/profile.entity';
+import { TypeORMError } from 'typeorm';
+import { GetUserPipe } from './pipes/index.pipe';
+import { ParseIntPipeCustom } from './pipes/parse.int.pipe';
+import { AuthGuard } from '@nestjs/passport';
 
 interface UserDto{
   name: string;
@@ -17,12 +23,14 @@ interface UserDto{
 }
 
 @Controller('user')
+//@UseFilters(new TypeormFilter()) // !局部filter，这种方式构造函数的参数要传参
+@UseFilters(TypeormFilter) // !局部filter，这种方式构造函数的参数只需要inject，   // !可以针对Controller和路由控制
 export class UserController {
   //private logger = new Logger(UserController.name)
   //private readonly userService: UserService;
   constructor(
-    //readonly userService: UserService, // !相当于上面和下面注释的两行，private readonly userService: UserService;   this.userService = new UserService()
-    @Inject('user') readonly userService: UserService,
+    readonly userService: UserService, // !相当于上面和下面注释的两行，private readonly userService: UserService;   this.userService = new UserService()
+    //@Inject('user') readonly userService: UserService,
     @Inject('userArr') readonly userArr: string[],
     @Inject('factory') readonly myFactory: string,
     private configService: ConfigService,
@@ -35,16 +43,24 @@ export class UserController {
     this.logger.log('UserController init')
   }
 
-  @Get()
-  getUsers(@Query() query: getUserDto): any {
-    console.log(query);
-    const regNum = /^[0-9]+$/
-    for (const key in query) {
-      if (regNum.test(query[key])) {
-        query[key] = parseInt(query[key])
-      }
-    }
-    console.log(query);
+  @Get() // !PipeTransform
+  getUsers(@Query(GetUserPipe) query: GetUserDto): any {
+    console.log('getUsers', query);
+    return this.userService.findAll(query);
+  }
+
+  @Get('getAll')
+  getAllUsers(
+    @Query('page', ParseIntPipeCustom) page: number, // !ParseIntPipeCustom 比ParseIntPipe好太多了,ParseIntPipe没值的时候会报错
+    //@Query('limit', ParseIntPipeCustom) limit: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    //@Query('limit', new DefaultValuePipe(10), ParseIntPipeCustom) limit: number,
+    @Query('username') username: string,
+    @Query('role', ParseIntPipeCustom) role: number,
+    @Query('gender', ParseIntPipeCustom) gender: number,
+  ): any {
+    const query = { page, limit, username, role, gender }
+    console.log('getAll', query)
     return this.userService.findAll(query);
   }
 
@@ -87,10 +103,10 @@ export class UserController {
   }
 
   /** 路由参数 */
-  @Get('param1/:id')
-  findOne1(@Param() params): string {
-    console.log(params.id);
-    return `This action returns a param1 #${params.id} cat`;
+  @Get('param1/:id') // !简单的Pipe
+  findOne1(@Param('id', ParseIntPipe) id): string {
+    console.log(id);
+    return `This action returns a param1 #${id} cat`;
   }
 
   @Get('param2/:id')
@@ -112,25 +128,41 @@ export class UserController {
   }
 
   @Post('add')
-  addUser(@Body() userDto: UserDto): any {
+  // @UseFilters(TypeormFilter) // !可以针对路由控制
+  addUser(@Body() userDto: User): any {
     console.log(userDto);
-    const user = {
-      username: 'lwj',
-      password: '123456'
-    } as User
-    return this.userService.create(user);
+    return this.userService.create(userDto);
   }
 
-  @Post('delete')
-  delUser(@Body() params: {id: string}): any {
+  @Post('delUser')
+  delUser(@Body() params: {id: number}): any {
     console.log(params);
-    return this.userService.delUser(params.id);
+    return this.userService.remove(params.id);
   }
 
-  @Post('update')
-  updateUser(@Body() params: {id: string}): any {
-    console.log(params);
-    return this.userService.updateUser(params.id);
+  @Post('updateUser')
+  updateUser(@Body() params: {id: number} & User & Profile, @Headers('Authorization') authorization: any): any {
+    console.log(authorization)
+    // !鉴权
+    if (authorization === 'Bearer') {
+      console.log(params);
+      const { id, username, password, gender, photo, address } = params
+      delete params.id
+      const userInfo = { // !其实前端传参的时候按下面格式传，后端就不用转换一层了，所以定义好。
+        username,
+        password,
+        profile: {
+          gender,
+          photo,
+          address
+        }
+      } as User
+      console.log(userInfo)
+      return this.userService.update(id, userInfo);
+    } else {
+      throw new UnauthorizedException()
+      //throw new TypeORMError()
+    }
   }
 
   @Get('queryPage')
@@ -151,8 +183,10 @@ export class UserController {
   }
 
   @Get('profile')
-  getProfile(): any {
-    return this.userService.findProfile(2);
+  @UseGuards(AuthGuard('jwt'))
+  getProfile(@Query('id', ParseIntPipe) id: number, @Req() req): any {
+    console.log(req.user)
+    return this.userService.findProfile(id);
   }
 
   @Get('logsById')

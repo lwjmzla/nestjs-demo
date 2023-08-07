@@ -1,4 +1,4 @@
-import {Entity , Column ,PrimaryGeneratedColumn, CreateDateColumn, Generated, OneToMany, JoinColumn, ManyToMany, JoinTable,OneToOne} from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, Generated, OneToMany, JoinColumn, ManyToMany, JoinTable, OneToOne, AfterInsert, AfterRemove } from 'typeorm'
 import { Logs } from '../../logs/logs.entity';
 import { Roles } from '../../roles/roles.entity';
 import { Profile } from './profile.entity';
@@ -21,13 +21,13 @@ export class User{
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true }) // !唯一
   username: string;
 
   @Column()
   password: string;
 
-  @CreateDateColumn({type:"timestamp"}) // !键入时间
+  @CreateDateColumn({ type:"timestamp" }) // !键入时间
   entryTime:Date
 
   @OneToMany(() => Logs, (logs) => logs.user) // !一对多 和logs.entity.ts的多对一 是一pair的
@@ -35,13 +35,23 @@ export class User{
   logs: Logs[]
 
   @ManyToMany(() => Roles, (roles) => roles.users)
-  @JoinTable({name: 'user_roles'}) // !多对多 生成关系表
+  @JoinTable({ name: 'user_roles' }) // !多对多 生成关系表
   roles: Roles[]
 
-  @OneToOne(() => Profile, (profile) => profile.user) // !一对一
+  @OneToOne(() => Profile, (profile) => profile.user, { cascade: true }) // !一对一
   //@JoinColumn() // !创建userId，可以传参{name: 'lwjid'} 改变字段名
   profile: Profile;
 
   // @Generated('uuid')
   // uuid:string
+
+  @AfterInsert()
+  afterInsert() {
+    console.log('afterInsert', this.id, this.username)
+  }
+
+  @AfterRemove()
+  afterRemove() {
+    console.log('AfterRemove')
+  }
 }
