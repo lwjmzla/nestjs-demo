@@ -58,7 +58,9 @@ export class UserController {
     @Query('username') username: string,
     @Query('role', ParseIntPipeCustom) role: number,
     @Query('gender', ParseIntPipeCustom) gender: number,
+    @Headers('userToken') userToken: any
   ): any {
+    console.log(userToken)
     const query = { page, limit, username, role, gender }
     console.log('getAll', query)
     return this.userService.findAll(query);
