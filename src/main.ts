@@ -3,12 +3,19 @@ import { AppModule } from './app.module';
 import { createLogger } from 'winston';
 import { WinstonModule, utilities, WINSTON_MODULE_NEST_PROVIDER  } from 'nest-winston';
 import * as winston from 'winston';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger, UnauthorizedException, ValidationPipe } from '@nestjs/common';
 // import 'winston-daily-rotate-file'
 import { AllExceptionsFilter } from './filters/http-exception.filter';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import type { NextFunction, Request, Response } from 'express';
 
-function MiddleWareAll(req:any, res:any, next:any){
+// !就是express的中间件
+function MiddleWareAll(req:Request, res:Response, next:NextFunction){
+  //console.log(req.headers)
   console.log('我是全局中间件.....')
+  // if (!req.headers.usertoken) {
+  //   throw new UnauthorizedException('请登录')
+  // }
   next()
 }
 
@@ -66,7 +73,7 @@ async function bootstrap() {
   // const logger = WinstonModule.createLogger({
   //   instance,
   // })
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     //logger: false // !关闭日志
     //logger: ['error' , 'warn']
     //logger,

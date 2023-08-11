@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Request, Inject, Query, HttpCode, Header, Headers, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService, UseFilters, ParseIntPipe, DefaultValuePipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Inject, Query, HttpCode, Header, Headers, Redirect, Bind, Param, Body, Logger, HttpException, HttpStatus, NotFoundException, UnauthorizedException, LoggerService, UseFilters, ParseIntPipe, DefaultValuePipe, UseGuards, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum } from '../enum/config.enum';
@@ -13,6 +13,7 @@ import { TypeORMError } from 'typeorm';
 import { GetUserPipe } from './pipes/index.pipe';
 import { ParseIntPipeCustom } from './pipes/parse.int.pipe';
 import { AuthGuard } from '@nestjs/passport';
+import type { NextFunction, Request, Response } from 'express';
 
 interface UserDto{
   name: string;
@@ -54,6 +55,7 @@ export class UserController {
     @Query('page', ParseIntPipeCustom) page: number, // !ParseIntPipeCustom 比ParseIntPipe好太多了,ParseIntPipe没值的时候会报错
     //@Query('limit', ParseIntPipeCustom) limit: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    // @Query('limit', new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE })) limit: number, // !改变Exception类型
     //@Query('limit', new DefaultValuePipe(10), ParseIntPipeCustom) limit: number,
     @Query('username') username: string,
     @Query('role', ParseIntPipeCustom) role: number,
@@ -204,5 +206,10 @@ export class UserController {
   @Post('userPage')
   userPage(@Body() body) {
     return this.userService.userPage(body);
+  }
+
+  @Post('page')
+  recordPage(@Res() response: Response) {
+    return response.status(503).send('asdasd')
   }
 }
