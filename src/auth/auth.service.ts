@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { GetUserDto } from 'src/user/dto';
 import { UserService } from 'src/user/user.service';
@@ -20,7 +20,7 @@ export class AuthService {
       //{ expiresIn: '1d' } // !局部设置
       )
     }
-    throw new UnauthorizedException()
+    throw new ForbiddenException('账号不存在或密码错误')
   }
 
   signup(username: string, password: string) {

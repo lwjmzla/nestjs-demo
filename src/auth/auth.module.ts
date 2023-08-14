@@ -8,7 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 
 @Module({
-  // !引入了Module，理论上就可以使用Service
+  // !引入了Module，理论上就可以使用Service（还需要exports: [UserService]）
   imports: [UserModule, PassportModule, JwtModule.registerAsync({
     imports: [ConfigModule],
     useFactory: async (configService: ConfigService) => ({

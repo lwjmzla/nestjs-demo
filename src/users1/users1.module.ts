@@ -2,9 +2,11 @@ import { NestModule, MiddlewareConsumer, Module, RequestMethod, Global } from '@
 import { Users1Service } from './users1.service';
 import { Users1Controller } from './users1.controller';
 import { CounterMiddleware } from '../counter/counter.middleware'
+import { UserModule } from 'src/user/user.module';
 
 @Global() // !全局模块
 @Module({
+  //imports: [UserModule],
   controllers: [Users1Controller],
   providers: [Users1Service],
   exports: [Users1Service],

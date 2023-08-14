@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { Global, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -10,6 +10,7 @@ import { CounterMiddleware } from '../counter/counter.middleware'
 import { BoyService } from '../boy/boy.service';
 import { HttpModule } from '@nestjs/axios';
 
+@Global() // !设为全局，方便各Injectable模块直接使用userService: UserService
 @Module({
   //imports: [ConfigModule.forRoot()], // !这种方式，要求每个使用到的module都要引入，麻烦，所以采用全局的
   imports:[HttpModule, TypeOrmModule.forFeature([User, Logs])], // !user.service.ts 注入的实体，需要先在这里引入。

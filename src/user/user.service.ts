@@ -128,7 +128,8 @@ export class UserService {
   }
   find(username: string) {
     return this.user.findOne({
-      where: { username }
+      where: { username },
+      relations: ['roles']
     })
   }
   async create(user: Partial<User>) {

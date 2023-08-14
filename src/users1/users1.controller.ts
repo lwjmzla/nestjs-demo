@@ -1,9 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { Users1Service } from './users1.service';
 import { CreateUsers1Dto } from './dto/create-users1.dto';
 import { UpdateUsers1Dto } from './dto/update-users1.dto';
+import { JwtGuard } from 'src/guard/jwt.guard';
+import { AdminGuard } from 'src/guard/admin.guard';
 
 @Controller('users1')
+@UseGuards(JwtGuard)  // !可以放在controller层、全局等
 export class Users1Controller {
   constructor(private readonly users1Service: Users1Service) {}
 
@@ -12,6 +15,7 @@ export class Users1Controller {
     return this.users1Service.create(createUsers1Dto);
   }
 
+  @UseGuards(AdminGuard)
   @Get()
   findAll() {
     return this.users1Service.findAll();

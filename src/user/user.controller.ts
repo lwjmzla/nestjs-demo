@@ -14,6 +14,8 @@ import { GetUserPipe } from './pipes/index.pipe';
 import { ParseIntPipeCustom } from './pipes/parse.int.pipe';
 import { AuthGuard } from '@nestjs/passport';
 import type { NextFunction, Request, Response } from 'express';
+import { AdminGuard } from 'src/guard/admin.guard';
+import { JwtGuard } from 'src/guard/jwt.guard';
 
 interface UserDto{
   name: string;
@@ -26,6 +28,7 @@ interface UserDto{
 @Controller('user')
 //@UseFilters(new TypeormFilter()) // !局部filter，这种方式构造函数的参数要传参
 @UseFilters(TypeormFilter) // !局部filter，这种方式构造函数的参数只需要inject，   // !可以针对Controller和路由控制
+// UseGuards(AuthGuard('jwt'))  // !可以放在controller层、全局等
 export class UserController {
   //private logger = new Logger(UserController.name)
   //private readonly userService: UserService;
@@ -50,6 +53,8 @@ export class UserController {
     return this.userService.findAll(query);
   }
 
+  //@UseGuards(AuthGuard('jwt'), AdminGuard)
+  @UseGuards(JwtGuard, AdminGuard) // !JwtGuard相当于可以简化、优化
   @Get('getAll')
   getAllUsers(
     @Query('page', ParseIntPipeCustom) page: number, // !ParseIntPipeCustom 比ParseIntPipe好太多了,ParseIntPipe没值的时候会报错
@@ -60,7 +65,7 @@ export class UserController {
     @Query('username') username: string,
     @Query('role', ParseIntPipeCustom) role: number,
     @Query('gender', ParseIntPipeCustom) gender: number,
-    @Headers('userToken') userToken: any
+    @Headers('user-token') userToken: any
   ): any {
     console.log(userToken)
     const query = { page, limit, username, role, gender }
@@ -187,9 +192,11 @@ export class UserController {
   }
 
   @Get('profile')
-  @UseGuards(AuthGuard('jwt'))
+  //@UseGuards(AdminGuard)
+  @UseGuards(AuthGuard('jwt')) // !知识点1.装饰器有多行的话，从下往上执行。
+  //@UseGuards(AuthGuard('jwt'), AdminGuard) // !知识点2. UseGuards里多个的话，从左往右执行。
   getProfile(@Query('id', ParseIntPipe) id: number, @Req() req): any {
-    console.log(req.user)
+    console.log('req', req.user)
     return this.userService.findProfile(id);
   }
 

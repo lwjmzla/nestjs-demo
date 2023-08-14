@@ -7,6 +7,9 @@ import {
   LoggerService,
   Inject,
   BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import * as requestIp from 'request-ip';
@@ -43,12 +46,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // console.log(exception instanceof HttpException)
     
     let msg = exception['reponse'] || exception['message'] || 'Internal Server Error'
-    if (exception instanceof QueryFailedError) {
-      msg =exception.message
-      // if (exception.driverError.errno && exception.driverError.errno === 1062) {
-      //   msg = '唯一索引冲突'
-      // }
-    }
     if (exception instanceof HttpException) {
       console.log(exception.getResponse())
       console.log(exception.message)
@@ -56,9 +53,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
 
     if (exception instanceof BadRequestException) {
-      if (msg?.message?.length) {
+      if (typeof msg?.message === 'string') {
+        msg = msg?.message
+      } else {
         msg = msg?.message[0]
       }
+    }
+
+    if (exception instanceof NotFoundException || exception instanceof UnauthorizedException || exception instanceof ForbiddenException) {
+      msg = msg?.message || msg
     }
 
     const responseBody = {
