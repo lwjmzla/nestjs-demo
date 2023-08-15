@@ -4,6 +4,7 @@ import { CreateUsers1Dto } from './dto/create-users1.dto';
 import { UpdateUsers1Dto } from './dto/update-users1.dto';
 import { JwtGuard } from 'src/guard/jwt.guard';
 import { AdminGuard } from 'src/guard/admin.guard';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('users1')
 @UseGuards(JwtGuard)  // !可以放在controller层、全局等
@@ -15,6 +16,7 @@ export class Users1Controller {
     return this.users1Service.create(createUsers1Dto);
   }
 
+  //@Public()
   @UseGuards(AdminGuard)
   @Get()
   findAll() {

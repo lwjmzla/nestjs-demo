@@ -25,10 +25,11 @@ import { Profile } from './user/entities/profile.entity'
 import { Logs } from './logs/logs.entity'
 import { Roles } from './roles/roles.entity'
 import { LogsModule } from './logs/logs.module';
-import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { AllExceptionsFilter } from './filters/http-exception.filter';
 import { connectionParams } from '../ormconfig'
 import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './guard/auth.guard';
 
 //import LoadConfigFn from './config' // !yml 配置文件方式
 
@@ -132,10 +133,10 @@ const mysqlConf = {
       provide: APP_FILTER, //!全局过滤器，不需要在 main.ts app.useGlobalFilters(new AllExceptionsFilter(logger,httpAdapterHost));
       useClass: AllExceptionsFilter,
     },
-    // {
-		// 	provide: APP_GUARD,
-		// 	useClass: AuthGuard,
-		// },
+    {
+			provide: APP_GUARD,
+			useClass: JwtAuthGuard,
+		},
 		{
 			provide: APP_PIPE,
 			useValue: new ValidationPipe({

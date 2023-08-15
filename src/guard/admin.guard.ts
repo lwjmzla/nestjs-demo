@@ -10,6 +10,7 @@ export class AdminGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest<Request>();
     console.log('req', req.user)
+    console.log(req.headers['user-token'])
     const user = await this.userService.find((req.user as any).username) // !继承AuthGuard('jwt')的req.user
     console.log(user)
     // !判断角色权限

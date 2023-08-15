@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from 'src/user/user.module';
@@ -7,9 +7,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 
+//@Global()
 @Module({
   // !引入了Module，理论上就可以使用Service（还需要exports: [UserService]）
   imports: [UserModule, PassportModule, JwtModule.registerAsync({
+    global: true, // ! 非常重要   和@Global()+exports: [JwtModule] 一样 都是实现全局模块
     imports: [ConfigModule],
     useFactory: async (configService: ConfigService) => ({
       secret: configService.get<string>('SECRET'),
@@ -20,6 +22,7 @@ import { JwtStrategy } from './jwt.strategy';
     inject: [ConfigService],
   })],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy]
+  providers: [AuthService, JwtStrategy],
+  //exports: [JwtModule]
 })
 export class AuthModule {}
